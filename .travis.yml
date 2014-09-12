@@ -5,23 +5,23 @@ env:
   - MAVEN_OPTS=-Xmx2048M
 
 # Install prerequisites for building Mirage2 more rapidly
-before_install:
+#before_install:
   # Install latest Node.js 0.10.x & print version info
-  - nvm install 0.10
-  - node --version
+  #- nvm install 0.10
+  #- node --version
   # Install Bower
-  - npm install -g bower
+  #- npm install -g bower
   # Install Grunt & print version info
-  - npm install -g grunt && npm install -g grunt-cli
-  - grunt --version
+  #- npm install -g grunt && npm install -g grunt-cli
+  #- grunt --version
   # Print ruby version info (should be installed)
-  - ruby -v
+  #- ruby -v
   # Install Sass & print version info
-  - gem install sass
-  - sass -v
+  #- gem install sass
+  #- sass -v
   # Install Compass & print version info
-  - gem install compass
-  - compass version
+  #- gem install compass
+  #- compass version
 
 # Run a quick version of "mvn install" to download module dependencies
 # Skip building the "dspace" assembly module, as we'll do that below
@@ -35,4 +35,4 @@ install: "mvn install -P !dspace"
 #  -Dmirage2.deps.included=false => Don't include Mirage2 build dependencies (We installed them in before_install)
 #  -B => Maven batch/non-interactive mode (recommended for CI)
 #  -V => Display Maven version info before build
-script: "travis_retry mvn clean package license:check -Dmaven.test.skip=false -Dmirage2.on=true -Dmirage2.deps.included=false -B -V"
+script: "travis_retry mvn clean package license:check -Dmaven.test.skip=false -Dmirage2.on=true -B -V"

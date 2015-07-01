@@ -19,19 +19,16 @@
       <relativePath>..</relativePath>
    </parent>
    
-    <!--<parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.2.4.RELEASE</version>
-    </parent>
-
-    <properties>
-        <java.version>1.7</java.version>
-    </properties>-->
    <properties>
        <!-- This is the path to the root [dspace-src] directory. -->
        <root.basedir>${basedir}/..</root.basedir>
+       
+       <!-- Versions of main dependencies -->
        <spring-boot.version>1.2.4.RELEASE</spring-boot.version>
+       <!-- Note: when updating Bootstrap or jQuery, you must also update the layout.html -->
+       <bootstrap.version>3.3.5</bootstrap.version>
+       <jquery.version>2.1.4</jquery.version>
+       
        <!-- Default resource delimiter for Spring Boot, so it doesn't clash with Spring ${} placeholders-->
        <resource.delimiter>@</resource.delimiter>
        <start-class>org.dspace.ui.Application</start-class>
@@ -62,6 +59,20 @@
                   <artifactId>log4j-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- Add in Bootstrap -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
+        </dependency>
+        
+        <!-- Add in JQuery -->
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>${jquery.version}</version>
         </dependency>
 
         <!-- DSpace dependencies -->

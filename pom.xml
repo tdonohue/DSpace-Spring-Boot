@@ -40,7 +40,8 @@
             Upgrading the spring version will make the XMLUI crash
         -->
         <hibernate.version>4.2.21.Final</hibernate.version>
-        <spring.version>3.2.16.RELEASE</spring.version>
+        <!-- Version of Spring as used by Spring Boot UI -->
+        <spring.version>4.1.6.RELEASE</spring.version>
         <!-- 'root.basedir' is the path to the root [dspace-src] dir. It must be redefined by each child POM,
              as it is used to reference the LICENSE_HEADER and *.properties file(s) in that directory. -->
         <root.basedir>${basedir}</root.basedir>
@@ -494,7 +495,7 @@
         <!--
            Builds XOAI Gateway WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-oai</id>
             <activation>
                 <file>
@@ -504,12 +505,12 @@
             <modules>
                 <module>dspace-oai</module>
             </modules>
-        </profile>
+        </profile>-->
 
         <!--
            Builds JSPUI WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-jspui</id>
             <activation>
                 <file>
@@ -519,12 +520,12 @@
             <modules>
                 <module>dspace-jspui</module>
             </modules>
-        </profile>
+        </profile>-->
 
         <!--
              Builds RDF API and Data Provider WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-rdf</id>
             <activation>
                 <file>
@@ -534,10 +535,10 @@
             <modules>
                 <module>dspace-rdf</module>
             </modules>
-        </profile>
+        </profile>-->
 
        <!-- REST Jersey -->
-       <profile>
+       <!--<profile>
            <id>dspace-rest</id>
            <activation>
                <file>
@@ -547,13 +548,13 @@
            <modules>
                <module>dspace-rest</module>
            </modules>
-       </profile>
+       </profile>-->
 
 
         <!--
            Builds SWORD WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-sword</id>
             <activation>
                 <file>
@@ -563,7 +564,7 @@
             <modules>
                 <module>dspace-sword</module>
             </modules>
-        </profile>
+        </profile>-->
 
 
         <!--
@@ -584,7 +585,7 @@
         <!--
            Builds SWORDv2 WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-swordv2</id>
             <activation>
                 <file>
@@ -594,12 +595,12 @@
             <modules>
                 <module>dspace-swordv2</module>
             </modules>
-        </profile>
+        </profile>-->
 
         <!--
            Builds MIRAGE2 WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
            <id>dspace-xmlui-mirage2</id>
            <activation>
                <file>
@@ -609,12 +610,12 @@
            <modules>
                <module>dspace-xmlui-mirage2</module>
            </modules>
-        </profile>
+        </profile>-->
         
         <!--
            Builds XMLUI WAR for DSpace
         -->
-        <profile>
+        <!--<profile>
             <id>dspace-xmlui</id>
             <activation>
                 <file>
@@ -623,6 +624,21 @@
             </activation>
             <modules>
                 <module>dspace-xmlui</module>
+            </modules>
+        </profile>-->
+
+        <!--
+           Builds Spring Boot UI for DSpace
+        -->
+        <profile>
+            <id>dspace-ui</id>
+            <activation>
+                <file>
+                    <exists>dspace-ui/pom.xml</exists>
+                </file>
+            </activation>
+            <modules>
+                <module>dspace-ui</module>
             </modules>
         </profile>
 
@@ -817,50 +833,50 @@
          </dependency>
         <!-- Explicitly Specify Latest Version of Spring -->
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <groupId>org.springframework</groupId>
             <version>${spring.version}</version>
         </dependency>
 
         <dependency>
-            <artifactId>spring-webmvc</artifactId>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
 

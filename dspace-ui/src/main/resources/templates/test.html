@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>DSpace Spring Boot Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Testing... 1 2 3</h1>
+    <h2>Test Query Param</h2>
+    <p th:text="'Hello, ' + ${name} + '!'" />
+    <h2>Test Spring Boot Setting (application.properties)</h2>
+    <p th:text="'Application Name: ' + ${appName}" />
+    <h2>Test Loading dspace.cfg</h2>
+    <p th:text="'Directory: ' + ${dir}" />
+    <p th:text="'Host: ' + ${host}" />
+    <p th:text="'URL: ' + ${url}" />
+    
+    <h2>Test Reading DSpace Top-Level Communities</h2>
+    <div th:each="comm : ${communities}">
+        <p th:text="${comm.name}">Name</p>
+    </div>
+    
+</body>
+</html>

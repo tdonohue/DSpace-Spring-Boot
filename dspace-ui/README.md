@@ -24,4 +24,6 @@
   * Spring Boot Settings from `application.properties`
   * DSpace configs from `dspace.cfg` (in DSpace installation directory)
   * DSpace top-level communities
-* See `org.dspace.ui.controller.TestController` & `src/main/resources/templates/test.html` for Test Controller & View respectively
+  * See `org.dspace.ui.controller.TestController` & `src/main/resources/templates/test.html` for Test Controller & View respectively
+* Layout provided by `src/main/resources/templates/layout.html`. The header/footer fragments are defined there, and inported into `test.html`.
+* Pre-minified Bootstrap & jQuery are automatically included via Maven dependencies (using http://webjars.org/)

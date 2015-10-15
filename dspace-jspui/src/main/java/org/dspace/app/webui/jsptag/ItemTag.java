@@ -26,7 +26,6 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.jstl.fmt.LocaleSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.DCInputsReaderException;
 import org.dspace.app.util.Util;
@@ -53,8 +52,8 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.I18nUtil;
-import org.dspace.core.PluginManager;
 import org.dspace.core.Utils;
+import org.dspace.core.factory.CoreServiceFactory;
 
 /**
  * <P>
@@ -211,7 +210,7 @@ public class ItemTag extends TagSupport
     /** log4j logger */
     private static Logger log = Logger.getLogger(ItemTag.class);
 
-    private StyleSelection styleSelection = (StyleSelection) PluginManager.getSinglePlugin(StyleSelection.class);
+    private StyleSelection styleSelection = (StyleSelection) CoreServiceFactory.getInstance().getPluginService().getSinglePlugin(StyleSelection.class);
     
     /** Hashmap of linked metadata to browse, from dspace.cfg */
     private static Map<String,String> linkedMetadata;

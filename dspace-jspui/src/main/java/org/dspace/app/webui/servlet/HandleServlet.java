@@ -27,8 +27,6 @@ import org.dspace.app.webui.util.Authenticate;
 import org.dspace.app.webui.util.JSPManager;
 import org.dspace.app.webui.util.UIUtil;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.authorize.factory.AuthorizeServiceFactory;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
@@ -43,7 +41,8 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
-import org.dspace.core.PluginManager;
+import org.dspace.core.factory.CoreServiceFactory;
+import org.dspace.core.service.PluginService;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
@@ -92,12 +91,14 @@ public class HandleServlet extends DSpaceServlet
     private CommunityService communityService;
     
     private CollectionService collectionService;
+
+    private PluginService pluginService;
     
     public HandleServlet()
     {
         super();
-        xHTMLHeadCrosswalk = (DisseminationCrosswalk) PluginManager
-                .getNamedPlugin(DisseminationCrosswalk.class, "XHTML_HEAD_ITEM");
+        pluginService = CoreServiceFactory.getInstance().getPluginService();
+        xHTMLHeadCrosswalk = (DisseminationCrosswalk) pluginService.getNamedPlugin(DisseminationCrosswalk.class, "XHTML_HEAD_ITEM");
     }
     
     public void init() throws ServletException {
@@ -496,7 +497,7 @@ public class HandleServlet extends DSpaceServlet
     {
         try
         {
-            ItemHomeProcessor[] chp = (ItemHomeProcessor[]) PluginManager.getPluginSequence(ItemHomeProcessor.class);
+            ItemHomeProcessor[] chp = (ItemHomeProcessor[]) pluginService.getPluginSequence(ItemHomeProcessor.class);
             for (int i = 0; i < chp.length; i++)
             {
                 chp[i].process(context, request, response, item);
@@ -586,7 +587,7 @@ public class HandleServlet extends DSpaceServlet
     {
     	try
     	{
-    		CommunityHomeProcessor[] chp = (CommunityHomeProcessor[]) PluginManager.getPluginSequence(CommunityHomeProcessor.class);
+    		CommunityHomeProcessor[] chp = (CommunityHomeProcessor[]) pluginService.getPluginSequence(CommunityHomeProcessor.class);
     		for (int i = 0; i < chp.length; i++)
     		{
     			chp[i].process(context, request, response, community);
@@ -733,7 +734,7 @@ public class HandleServlet extends DSpaceServlet
     {
     	try
     	{
-    		CollectionHomeProcessor[] chp = (CollectionHomeProcessor[]) PluginManager.getPluginSequence(CollectionHomeProcessor.class);
+    		CollectionHomeProcessor[] chp = (CollectionHomeProcessor[]) pluginService.getPluginSequence(CollectionHomeProcessor.class);
     		for (int i = 0; i < chp.length; i++)
     		{
     			chp[i].process(context, request, response, collection);

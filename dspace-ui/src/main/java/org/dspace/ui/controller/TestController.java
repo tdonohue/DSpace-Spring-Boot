@@ -8,8 +8,11 @@
 package org.dspace.ui.controller;
 
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.dspace.content.Community;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.CommunityService;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.ui.utils.ContextUtil;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TestController {
     
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
+
+    protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
 
     // This reads the value of "spring.application.name" from application.properties
     // and assigns it to "appName"
@@ -65,7 +70,7 @@ public class TestController {
         // Get list of DSpace Communities
         Context context = ContextUtil.obtainContext(request);
         // Load DSpace Communities & save to "communities" model attribute for View
-        Community[] communities = Community.findAllTop(context);
+        List<Community> communities = communityService.findAllTop(context);
         model.addAttribute("communities", communities);
         
         // NOTE: Context cannot be closed before the View loads. But, don't worry

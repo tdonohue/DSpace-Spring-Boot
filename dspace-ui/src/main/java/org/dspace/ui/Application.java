@@ -7,7 +7,6 @@
  */
 package org.dspace.ui;
 
-import java.util.Arrays;
 import javax.servlet.Filter;
 import org.dspace.app.util.DSpaceContextListener;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +16,6 @@ import org.dspace.ui.filter.DSpaceRequestContextFilter;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 

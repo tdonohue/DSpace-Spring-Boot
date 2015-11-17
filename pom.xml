@@ -41,7 +41,10 @@
         -->
         <hibernate.version>4.2.21.Final</hibernate.version>
         <!-- Version of Spring as used by Spring Boot UI -->
-        <spring.version>4.1.6.RELEASE</spring.version>
+        <!-- This MUST be identical to the version in the spring-boot-dependencies POM -->
+        <!-- TODO: If we go with Spring Boot, we also should sync up the dependency versions above
+                   for Solr, Hibernate, Flyway, etc. -->
+        <spring.version>4.2.3.RELEASE</spring.version>
         <!-- 'root.basedir' is the path to the root [dspace-src] dir. It must be redefined by each child POM,
              as it is used to reference the LICENSE_HEADER and *.properties file(s) in that directory. -->
         <root.basedir>${basedir}</root.basedir>

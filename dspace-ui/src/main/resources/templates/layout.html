@@ -34,17 +34,28 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#" th:text="${appName}">Project name</a>
+          <a class="navbar-brand" href="#" th:text="${applicationName}">Project name</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="test">TestPage</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </div>
       </div>
+      <ul class="breadcrumb">
+        <!-- "breadCrumbList" is the default name of List<BreadCrumb> -->
+        <li th:each="crumb : ${breadCrumbList}">
+           <!-- Add a links for all crumbs EXCEPT the last one -->
+           <a th:href="${crumb.path}" th:unless="${crumb.equals(breadCrumbList.getLast())}" th:text="${crumb.label}">(breadcrumbs)</a>
+           <span th:if="${crumb.equals(breadCrumbList.getLast())}" th:text="${crumb.label}">(breadcrumbs)</span>
+        </li>
+      </ul>
     </div>
+
+
 
     <!-- Sample content -->
     <div class="container">

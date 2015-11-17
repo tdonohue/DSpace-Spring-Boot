@@ -8,16 +8,12 @@
     
     <div class="container">
         <div class="starter-template">
-            <h1>DSpace UI on Spring Boot + ThymeLeaf + Bootstrap</h1>
-            <p class="lead">Say that three times fast</p>
-            <h2>1. Test Querystring Param (use "?name=")</h2>
-            <p th:text="'Hello, ' + ${name} + '!'" />
+            <h1>DSpace HOMEPAGE</h1>
+            <p class="lead">DSpace rocks</p>
             <h2>2. Test Spring Boot Setting (via application.properties)</h2>
             <p th:text="'Application Name: ' + ${applicationName}" />
-            <h2>3. Test Loading dspace.cfg (via ConfiguationService)</h2>
-            <p th:text="'dspace.dir: ' + ${dir}" />
-            <p th:text="'dspace.hostname: ' + ${host}" />
-            <p th:text="'dspace.url: ' + ${url}" />
+            <h2>Context Path</h2>
+            <p th:text="'contextpath: ' + ${path}" />
 
             <h2>4. Test Listing all DSpace top-level Communities</h2>
             <div th:each="comm : ${communities}">

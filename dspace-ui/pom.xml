@@ -48,6 +48,22 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- These next two dependencies build a WAR that is BOTH executable
+             AND deployable into an external container (Tomcat).
+             See: http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#build-tool-plugins-maven-packaging
+             NOTE: These are commented out for now, as it's easiest to do
+             rapid development as a *JAR*. To use these change the <packaging>
+             above to "war" and uncomment. -->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>-->
+
         <!-- Add in ThymeLeaf templating engine: http://www.thymeleaf.org/ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

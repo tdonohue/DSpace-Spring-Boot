@@ -15,28 +15,38 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CommunityService;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
+import org.dspace.ui.utils.BreadCrumb;
 import org.dspace.ui.utils.ContextUtil;
 import org.dspace.utils.DSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class TestController {
-    
+public class TestController extends DSpaceController
+{
     private static final Logger log = LoggerFactory.getLogger(TestController.class);
 
     protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
 
-    // This reads the value of "spring.application.name" from application.properties
-    // and assigns it to "appName"
-    @Value("${spring.application.name}")
-    private String appName;
-    
+    /**
+     * Specify the breadcrumb(s) for this page
+     * @return 
+     */
+    @ModelAttribute
+    @Override
+    public List<BreadCrumb> getBreadCrumbs()
+    {
+        List<BreadCrumb> breadcrumbs = super.getBreadCrumbs();
+        breadcrumbs.add(new BreadCrumb("Test", "/test"));
+
+        return breadcrumbs;
+    }
+
     /**
      * Sample Controller. Responds to the "/test" path
      * @param name - This is an example, optional parameter which may be passed into the request (e.g. ?name=Tim on querystring)
@@ -54,7 +64,8 @@ public class TestController {
         model.addAttribute("name", name);
         
         // Get application name from application.properties
-        model.addAttribute("appName", appName);
+        // (NOTE: this property is defined in DSpaceController)
+        model.addAttribute("applicationName", applicationName);
         
         // Get various properties from dspace.cfg file
         ConfigurationService config = new DSpace().getConfigurationService();

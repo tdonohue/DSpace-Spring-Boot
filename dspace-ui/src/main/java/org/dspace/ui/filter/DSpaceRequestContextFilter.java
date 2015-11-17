@@ -53,14 +53,12 @@ public class DSpaceRequestContextFilter implements Filter
         }
         finally
         {
-            // Abort the context if it's still valid
+            // Abort the context if it's still valid, thus closing any open
+            // database connections
             if ((context != null) && context.isValid())
             {
-                log.info("Found valid Context! ABORTING");
                 ContextUtil.abortContext(request);
             }
-            else
-                log.info("No valid Context");
         }
     }
     

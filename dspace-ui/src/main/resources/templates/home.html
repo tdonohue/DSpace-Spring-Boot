@@ -8,17 +8,14 @@
     
     <div class="container">
         <div class="starter-template">
-            <h1>DSpace HOMEPAGE</h1>
-            <p class="lead">DSpace rocks</p>
-            <h2>2. Test Spring Boot Setting (via application.properties)</h2>
-            <p th:text="'Application Name: ' + ${applicationName}" />
-            <h2>Context Path</h2>
-            <p th:text="'contextpath: ' + ${path}" />
+            <h2 th:text="'Welcome to the ' + ${applicationName}">(DSpace Homepage Heading)</h2>
+            <p class="lead">Built on Spring Boot + ThymeLeaf + Bootstrap</p>
 
-            <h2>4. Test Listing all DSpace top-level Communities</h2>
-            <div th:each="comm : ${communities}">
-                <p th:text="${comm.name}">Name</p>
-            </div>
+            <!--/* List of Top Level Communities */-->
+            <h3 th:unless="${#lists.isEmpty(communities)}">Communities</h3>
+            <ul th:each="community : ${communities}">
+                <li><a href="#" th:href="@{'/handle/' + ${community.handle}}" th:text="${community.name}">(Top-Level Community Names)</a></li>
+            </ul>
         </div>
     </div>
     

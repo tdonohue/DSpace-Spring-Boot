@@ -23,25 +23,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Controller for homepage
+ * @author Tim Donohue
+ */
 @Controller
 public class HomeController extends DSpaceController
 {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
+    // Path that this Controller responds to
+    private static final String PATH = "/";
+
     protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
 
     // This Controller responds to / path
-    @RequestMapping("/")
+    @RequestMapping(PATH)
     public String home(Model model, HttpServletRequest request)
             throws SQLException
     {
-        // Get application name from application.properties
-        model.addAttribute("applicationName", applicationName);
-        
         // Get various properties from dspace.cfg file
         ConfigurationService config = new DSpace().getConfigurationService();
-
-        model.addAttribute("path", request.getContextPath());
 
         // Get list of DSpace Communities
         Context context = ContextUtil.obtainContext(request);

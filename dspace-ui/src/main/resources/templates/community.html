@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+
+<body>
+    <div th:replace="layout :: navbar">(navbar)</div>
+    
+    <div class="container">
+        <div class="starter-template">
+            <!--/* Community name */-->
+            <h2 th:text="${name}">(Community Name)</h2>
+            
+            <!--/* Display logo if one exists */-->
+            <img th:if="${logo}" class="logo img-responsive" th:alt-title="${name} + ' logo'"  th:src="${logo}"/>
+
+            <!--/* Display intro text if exists, as unescaped HTML */-->
+            <p th:if="${intro}" th:utext="${intro}" class="intro-text">(intro text)</p>
+
+            <!--/* List of Sub-Communities */-->
+            <h3 th:unless="${#lists.isEmpty(community.subcommunities)}">Sub-communities in this community</h3>
+            <ul th:each="sub : ${community.subcommunities}">
+                <li><a href="#" th:href="@{'/handle/' + ${sub.handle}}" th:text="${sub.name}">(Sub-Community Names)</a></li>
+            </ul>
+
+            <!--/* List of Collections */-->
+            <h3 th:unless="${#lists.isEmpty(community.collections)}">Collections in this community</h3>
+            <ul th:each="collection : ${community.collections}">
+                <li><a href="#" th:href="@{'/handle/' + ${collection.handle}}" th:text="${collection.name}">(Collection Names)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div th:include="layout :: footer" id="footer">(footer)</div>
+</body>
+</html>

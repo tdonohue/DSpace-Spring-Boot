@@ -987,10 +987,13 @@
             <artifactId>mail</artifactId>
             <version>1.4.7</version>
          </dependency>
+         <!-- Use Servlet 3.0, so that we can use @WebListener (and similar) annotations
+              for SpringBoot. Also means we don't need a web.xml anymore. -->
          <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
          </dependency>
 
          <dependency>

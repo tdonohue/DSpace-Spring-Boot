@@ -17,6 +17,13 @@
             <!--/* Display intro text if exists, as unescaped HTML */-->
             <p th:if="${intro}" th:utext="${intro}" class="intro-text">(intro text)</p>
 
+            <!--/* Display news if exists, as unescaped HTML */-->
+            <h3 th:if="${news}">News</h3>
+            <p th:if="${news}" th:utext="${news}" class="news-text">(news text)</p>
+
+            <!--/* Display copyright if exists */-->
+            <p th:if="${copyright}" th:utext="${copyright}" class="copyright-text"><em>(copyright text)</em></p>
+
             <!--/* List of Sub-Communities */-->
             <h3 th:unless="${#lists.isEmpty(community.subcommunities)}">Sub-communities in this community</h3>
             <ul th:each="sub : ${community.subcommunities}">
@@ -27,6 +34,12 @@
             <h3 th:unless="${#lists.isEmpty(community.collections)}">Collections in this community</h3>
             <ul th:each="collection : ${community.collections}">
                 <li><a href="#" th:href="@{'/handle/' + ${collection.handle}}" th:text="${collection.name}">(Collection Names)</a></li>
+            </ul>
+
+            <!--/* List of Recent Submissions */-->
+            <h3 th:unless="${#lists.isEmpty(recentSubmissions)}">Recent Submissions</h3>
+            <ul th:each="item : ${recentSubmissions}">
+                <li><a href="#" th:href="@{'/handle/' + ${item.handle}}" th:text="${item.name}">(Item Titles)</a></li>
             </ul>
         </div>
     </div>

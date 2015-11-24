@@ -19,8 +19,12 @@ import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
+import org.dspace.services.ConfigurationService;
 import org.dspace.ui.utils.BreadCrumb;
 import org.dspace.ui.utils.ContextUtil;
+import org.dspace.utils.DSpace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,7 +37,9 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Tim Donohue
  */
 @Controller
-public class DSpaceController {
+public class DSpaceController
+{
+    private static final Logger log = LoggerFactory.getLogger(DSpaceController.class);
 
     // Path which corresponds to an object homepage
     protected final String OBJECT_PATH_PREFIX = "/handle/";
@@ -45,6 +51,9 @@ public class DSpaceController {
 
     // Shared reference to HandleService
     protected HandleService handleService = HandleServiceFactory.getInstance().getHandleService();
+
+    // Shared reference to ConfigurationService
+    protected ConfigurationService configurationService = new DSpace().getConfigurationService();
 
     /**
      * Make ${applicationName} available to all pages in theme
@@ -118,14 +127,17 @@ public class DSpaceController {
             // Based on the path, we'll generate a human-readable label
             String label = p;
 
-            //Replace all dashes (-) in paths with spaces
-            label = label.replaceAll("-", " ");
+            if(label!=null && !label.isEmpty())
+            {
+                //Replace all dashes (-) in paths with spaces
+                label = label.replaceAll("-", " ");
 
-            //Uppercase all initial letters
-            label = WordUtils.capitalize(label);
+                //Uppercase all initial letters
+                label = WordUtils.capitalize(label);
 
-            // Append this breadcrumb label & path to our list
-            breadcrumbs.add(new BreadCrumb(label, p));
+                // Append this breadcrumb label & path to our list
+                breadcrumbs.add(new BreadCrumb(label, p));
+            }
         }
 
         // Finally, prepend Home to all paths

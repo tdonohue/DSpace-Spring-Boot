@@ -16,21 +16,87 @@ import org.dspace.ui.filter.DSpaceRequestContextFilter;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 
+/**
+ * Define the Application settings itself. This class takes the place of a
+ * web.xml file, and configures all Filters/Listeners as methods (see below).
+ * <P>
+ * NOTE: Requires a Servlet 3.0 container, e.g. Tomcat 7.0 or above.
+ * <p>
+ * NOTE: This extends SpringBootServletInitializer in order to allow us to build
+ * a deployable WAR file with Spring Boot. See:
+ * http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file
+ *
+ * @author Tim
+ */
 @SpringBootApplication
-public class Application {
-
+public class Application extends SpringBootServletInitializer
+{
     private static final Logger log = LoggerFactory.getLogger(Application.class);
-    
+
+    /**
+     * Override the default SpringBootServletInitializer.configure() method,
+     * passing it this Application class.
+     * <P>
+     * This is necessary to allow us to build a deployable WAR, rather than
+     * always relying on embedded Tomcat.
+     * <P>
+     * See: http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file
+     * @param application
+     * @return
+     */
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
+    }
+
+    /**
+     * This override of SpringBootServletInitializer.onStartup() allows an
+     * EXTERNAL Tomcat to properly work with out required Listeners.
+     * <P>
+     * For some strange reason, our required Listeners load properly on embedded
+     * Tomcat, but NOT on an external one.
+     * <P>
+     * However, the AnnotationConfigWebApplicationContext() doesn't seem to work
+     * for EMBEDDED Tomcat containers. Odd.
+     * @param servletContext
+     * @throws ServletException
+     */
+    /**@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+        //webApplicationContext.register(Application.class);
+        //webApplicationContext.setServletContext(servletContext);
+        webApplicationContext.setConfigLocation(Application.class.getName());
+
+        servletContext.setInitParameter("dspace.dir", dspaceHome);
+        servletContext.addListener(dspaceKernelListener());
+        servletContext.addListener(dspaceContextListener());
+		servletContext.addServlet("dispatcherServlet",
+				new DispatcherServlet(webApplicationContext)).addMapping("/*");
+	}*/
+
     /**
      * Register the "DSpaceKernelServletContextListener" so that it is loaded
      * for this Application.
      * @return DSpaceKernelServletContextListener
      */
     @Bean
-    @Order(value=1)
+    public TestListener testListener() {
+        return new TestListener();
+    }
+
+    /**
+     * Register the "DSpaceKernelServletContextListener" so that it is loaded
+     * for this Application.
+     * @return DSpaceKernelServletContextListener
+     */
+    @Bean
+    @Order(1)
     protected DSpaceKernelServletContextListener dspaceKernelListener() {
         // This registers our listener which starts the DSpace Kernel
         return new DSpaceKernelServletContextListener();
@@ -42,7 +108,7 @@ public class Application {
      * @return DSpaceContextListener
      */
     @Bean
-    @Order(value=2)
+    @Order(2)
     protected DSpaceContextListener dspaceContextListener() {
         // This listener initializes the DSpace Context object
         // (and loads all DSpace configs)
@@ -56,6 +122,7 @@ public class Application {
      * @return DSpaceWebappServletFilter
      */
     @Bean
+    @Order(1)
     protected Filter dspaceWebappServletFilter() {
         return new DSpaceWebappServletFilter();
     }
@@ -67,6 +134,7 @@ public class Application {
      * @return DSpaceRequestContextFilter
      */
     @Bean
+    @Order(2)
     protected Filter dspaceRequestContextFilter() {
         return new DSpaceRequestContextFilter();
     }
@@ -75,10 +143,12 @@ public class Application {
      * Actually run/initialize this Spring Application
      * @param args 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception
+    {
         SpringApplication.run(Application.class, args);
         
         // BELOW IS TEST CODE which just lists all Beans that were loaded by Spring Boot
+        // It is left commented out as it's useful for debugging bean issues.
         /*ApplicationContext ctx = SpringApplication.run(Application.class, args);
 
         System.out.println("LIST OF BEANS loaded/provided by Spring Boot:");

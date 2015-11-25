@@ -20,7 +20,8 @@
 
     <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css}" rel="stylesheet"/>
-    <link th:href="@{/css/starter-template.css}" rel="stylesheet"/>
+    <!--/* NOTE: theme is determined dynamically in DSpaceController */-->
+    <link th:href="@{'/css/' + ${theme} + '.css'}" rel="stylesheet"/>
   </head>
 
   <body>

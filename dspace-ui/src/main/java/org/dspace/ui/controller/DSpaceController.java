@@ -25,8 +25,11 @@ import org.dspace.ui.utils.ContextUtil;
 import org.dspace.utils.DSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -46,6 +49,12 @@ public class DSpaceController
 
     // Parameter which, when specified, refers to a specific object
     protected final String OBJECT_ID_PARAMETER = "handle";
+
+    protected final String THEME_SETTING = "dspace.theme";
+
+    // Autowire our Environment, so that we can directly read settings from application.properties
+    @Autowired
+    Environment env;
 
     // This reads the value of "spring.application.name" from application.properties
     // and assigns it to "applicationName"
@@ -69,13 +78,54 @@ public class DSpaceController
         return applicationName;
     }
 
+    
+    /**
+     * Add several key attributes to our model at once. These attributes
+     * help to drive our theme / layout (e.g. breadcrumbs, theme, etc)
+     * @param model
+     * @param request 
+     */
+    @ModelAttribute
+    public void setAttributes(Model model, HttpServletRequest request)
+    {
+        // Get our breadcrumbs, based on our current request location
+        List<BreadCrumb> breadcrumbs = getBreadCrumbs(request);
+        model.addAttribute(breadcrumbs);
+
+        String default_theme = env.getProperty(THEME_SETTING);
+        String theme = null;
+        // Now, based on our breadcrumbs, determine our theme!
+        for(BreadCrumb crumb: breadcrumbs)
+        {
+            // Get the path in the breadcrumbs, and see if it
+            // matches with a theme configuration
+            // For example, this theme will be applied to anything under /handle/1234/5678
+            //    dspace.theme.handle.1234.5678 = mytheme
+            String objPath = crumb.getPath();
+            // Transform paths like /handle/1234/5678 to ".handle.1234.5678"
+            objPath = objPath.replace("/", ".");
+            // Check for a theme configuration specific to this path
+            theme = env.getProperty(THEME_SETTING + objPath);
+            // First match wins! (This lets Community/Collection themes be inherited by Collections/Items, etc)
+            if(theme!=null && !theme.isEmpty())
+                break;
+        }
+
+        // If theme is still null, check the configured default theme.
+        // Otherwise, set to a theme actually named "default"
+        if(theme==null)
+            theme = default_theme != null ? default_theme : "default";
+
+        // Add theme name to our model
+        model.addAttribute("theme", theme);
+    }
+    
     /**
      * Add list of breadcrumbs, based on our path within the application.
      *
      * @param request HttpServletRequest (automatically provided)
      * @return List of BreadCrumbs for display in theme
      */
-    @ModelAttribute
     public List<BreadCrumb> getBreadCrumbs(HttpServletRequest request)
     {
         // First, check if a parameter was passed on the request referring

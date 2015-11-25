@@ -1,0 +1,14 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+}
+
+dt {
+  padding-top: 10px;
+}
+
+.breadcrumb {
+  background-color: red;
+}

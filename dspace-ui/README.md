@@ -24,6 +24,7 @@
   * Site-wide Breadcrumbs
   * Basic Homepages for Community, Collection and Item objects
   * Very basic I18N example (on Item Homepage)
-* Layout provided by `src/main/resources/templates/layout.html`. The header/footer fragments are defined there, and inported into all pages.
+  * Very basic Themes (corresponding to CSS files), which can be configured globally or per Community/Collection/Item (see "dspace.theme.*" setting in application.properties)
+* Layout provided by `src/main/resources/templates/layout.html`. The header/footer fragments are defined there, and imported into all pages.
   * Currently the layout is just a default Bootstrap theme.
 * Pre-minified Bootstrap & jQuery are automatically included via Maven dependencies (using http://webjars.org/)

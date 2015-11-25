@@ -29,8 +29,14 @@
             <div class="row">
                 <!-- Left Column -->
                 <div class="col-sm-4">
+
                     <!-- Description List of metadata fields -->
                     <dl>
+                        <!--/* File Listing */-->
+                        <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(bitstreams)}"></dt>
+                        <dd th:each="bitstream : ${bitstreams}">
+                           <a href="#" th:href="@{'/bitstream/handle/' + ${item.handle} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">(File Name)</a>
+                        </dd>
 
                         <!--/* Issued Date (uses I18N) */-->
                         <!--/* This defines a local variable named 'date' and only displays its value if not null */-->
@@ -38,7 +44,6 @@
                             <dt th:text="#{item.label.dc.date.issued}">(Date)</dt>
                             <dd th:text="${date}">(Date value)</dd>
                         </th:block>
-
                     </dl>
                 </div>
                 <!-- Right Column -->

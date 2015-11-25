@@ -214,12 +214,13 @@ public class DSpaceController
      * Extract the object identifier out of a given path
      * <P>
      * This may be one of two URL types:
-     * /handle/1/1
-     * /handle/1/1/extra/info
+     * /handle/123/456
+     * /handle/123/456/extra/info
      *
      * @param path
+     * @return objectID (e.g. 123/456
      */
-    private String getObjectIDFromPath(String path)
+    public String getObjectIDFromPath(String path)
     {
         String objID = "";
 
@@ -245,6 +246,36 @@ public class DSpaceController
         }
 
         return objID;
+    }
+
+    /**
+     * Extract the Object extra info out of a given path
+     * <P>
+     * This may be one of two URL types:
+     * /handle/1/1            -> Returns null
+     * /handle/1/1/extra/info -> Returns "extra/info"
+     *
+     * @param path
+     */
+    public String getObjectExtraInfoFromPath(String path)
+    {
+        // Remove our path prefix (e.g. /handle/)
+        if(path.startsWith(OBJECT_PATH_PREFIX))
+            path = path.substring(OBJECT_PATH_PREFIX.length());
+
+        // Then extract any Object ID from path
+        String objectID = getObjectIDFromPath(path);
+
+        //Remove the Object ID as well
+        if(objectID!=null && path.startsWith(objectID))
+            path = path.substring(objectID.length());
+
+        //Remove any preceding slashes
+        if(path.startsWith("/"))
+            path = path.substring(1);
+
+        // What remains is the "extra info"
+        return path;
     }
 
     /**

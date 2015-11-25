@@ -8,10 +8,13 @@
 package org.dspace.ui.controller;
 
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.dspace.content.Bundle;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.ui.exception.PageNotFoundException;
 import org.dspace.ui.utils.ContextUtil;
@@ -39,7 +42,7 @@ public class ItemController extends DSpaceController
         // Get DSpace context
         Context context = ContextUtil.obtainContext(request);
 
-        // Now, get the Collection with this handle
+        // Now, get the Item with this handle
         DSpaceObject dso = handleService.resolveToObject(context, handle);
 
         if(dso instanceof Item)
@@ -70,13 +73,17 @@ public class ItemController extends DSpaceController
         model.addAttribute("item", item);
         model.addAttribute("title", item.getName());
 
-        // Get other Item info for display
+        // Get itemService, which we will use to display specific metadata fields
         ItemService itemService = item.getItemService();
         model.addAttribute("itemService", itemService);
 
-        
-        //List<MetadataValue> mvs = itemService.getMetadata(item, applicationName, applicationName, applicationName, applicationName);
-        //mvs.get(0).getValue();
+        // Get the content bundle
+        List<Bundle> bundles = itemService.getBundles(item, Constants.CONTENT_BUNDLE_NAME);
+        // There should just be ONE content bundle. Add its bitstreams to our model
+        if(bundles.size()>0)
+        {
+            model.addAttribute("bitstreams", bundles.get(0).getBitstreams());
+        }
 
         // return item.html
         return "item";

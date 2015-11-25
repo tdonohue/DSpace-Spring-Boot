@@ -44,6 +44,9 @@ public class DSpaceController
     // Path which corresponds to an object homepage
     protected final String OBJECT_PATH_PREFIX = "/handle/";
 
+    // Parameter which, when specified, refers to a specific object
+    protected final String OBJECT_ID_PARAMETER = "handle";
+
     // This reads the value of "spring.application.name" from application.properties
     // and assigns it to "applicationName"
     @Value("${spring.application.name}")
@@ -75,39 +78,50 @@ public class DSpaceController
     @ModelAttribute
     public List<BreadCrumb> getBreadCrumbs(HttpServletRequest request)
     {
-        // Get full path (without context path)
-        // This will return something like /handle/1/1
-        String path = new UrlPathHelper().getPathWithinApplication(request);
+        // First, check if a parameter was passed on the request referring
+        // to a specific object by its ID
+        String objectIDParam = request.getParameter(OBJECT_ID_PARAMETER);
+
+        // Get servlet path (without application's context path)
+        // If you are accessing a specific object in the system,
+        // this will return something like /handle/1/1
+        String path = new UrlPathHelper().getOriginatingServletPath(request);
+
+        // Double check that the context path is not at the beginning
+        String contextPath = new UrlPathHelper().getOriginatingContextPath(request);
+        if(path.startsWith(contextPath))
+            path = path.replace(contextPath, "");
 
         // List of breadcrumbs
         List<BreadCrumb> breadcrumbs = new LinkedList<>();
 
-        // Check if this path refers to a specific object
+        // If an objectID parameter was found, use it.
+        // Otherwise, determine it from our request path
         String objID = null;
-        if(path.startsWith(OBJECT_PATH_PREFIX))
-        {
-            // Extract the object ID from our request path
+        if(objectIDParam!=null && !objectIDParam.isEmpty())
+            objID = objectIDParam;
+        else
             objID = getObjectIDFromPath(path);
             
-            try
-            {
-                // Get DSpace context
-                Context context = ContextUtil.obtainContext(request);
+        try
+        {
+            // Get DSpace context
+            Context context = ContextUtil.obtainContext(request);
 
-                // Now, get the object with this handle
-                DSpaceObject dso = handleService.resolveToObject(context, objID);
+            // Now, get the object with this handle
+            DSpaceObject dso = handleService.resolveToObject(context, objID);
 
-                // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
-                addObjectBreadCrumbs(breadcrumbs, dso);
-            }
-            catch(SQLException e)
-            {
-                // do nothing
-            }
+            // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
+            addObjectBreadCrumbs(breadcrumbs, dso);
+        }
+        catch(SQLException e)
+        {
+            // do nothing
         }
 
-        // If our path referenced an object, remove that objID
-        if(objID!=null && !objID.isEmpty())
+        // If our path referenced an object, remove that part of the path,
+        // in order to see if we have any extra information
+        if(path.startsWith(OBJECT_PATH_PREFIX) && objID!=null && !objID.isEmpty())
             path = path.replace(OBJECT_PATH_PREFIX + objID, "");
 
         // At this point we may still have a non-empty path, if it didn't refer

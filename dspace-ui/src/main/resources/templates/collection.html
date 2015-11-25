@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
 
@@ -24,19 +24,22 @@
             </ul>
 
             <h3 th:unless="${#lists.isEmpty(items)}">Items</h3>
-
             <div class="table-pagination">
+                <!--/* Table of Items */-->
                 <table class="table table-condensed table-hover table-pagination">
                     <tr th:each="item : ${items.pageList}">
                         <td><a href="#" th:href="@{'/handle/' + ${item.handle}}" th:text="${item.name}">(Item Titles)</a></td>
                     </tr>
                 </table>
+                <div th:text="'Showing page ' + ${items.page+1} + ' of ' + ${items.pageCount}">(Showing page 1 of 1)</div>
+                <!--/* Pagination options, e.g. [Previous][1]..[Next] */-->
                 <ul class="pagination pagination-centered">
+                    <!--/* Previous button */-->
                     <li th:class="${items.page eq 0} ? 'disabled' : ''">
                         <a th:unless="${items.firstPage}" th:href="@{'/handle/' + ${collection.handle}(page=${items.page-1})}">Previous</a>
                         <a th:if="${items.firstPage}" href="javascript:void(0);">Previous</a>
                     </li>
-
+                    <!--/* Numbered pages */-->
                     <li th:each="pageNo : ${#numbers.sequence(0, items.pageCount - 1)}" th:class="${items.page eq pageNo}? 'active' : ''">
                         <a th:if="${items.page eq pageNo}" href="javascript:void(0);">
                             <span th:text="${pageNo + 1}"></span>
@@ -45,6 +48,7 @@
                             <span th:text="${pageNo + 1}"></span>
                         </a>
                     </li>
+                    <!--/* Next button */-->
                     <li th:class="${items.page + 1 ge items.pageCount} ? 'disabled' : ''">
                         <a th:unless="${items.lastPage}" th:href="@{'/handle/' + ${collection.handle}(page=${items.page+1})}">Next</a>
                         <a th:if="${items.lastPage}" href="javascript:void(0);">Next</a>

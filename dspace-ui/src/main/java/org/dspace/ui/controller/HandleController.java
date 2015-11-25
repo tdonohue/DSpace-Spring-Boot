@@ -8,24 +8,17 @@
 package org.dspace.ui.controller;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.collections.IteratorUtils;
 import org.dspace.browse.BrowseEngine;
 import org.dspace.browse.BrowseException;
 import org.dspace.browse.BrowseIndex;
 import org.dspace.browse.BrowseInfo;
 import org.dspace.browse.BrowserScope;
-import org.dspace.content.Bitstream;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.factory.ContentServiceFactory;
-import org.dspace.content.service.CollectionService;
-import org.dspace.content.service.CommunityService;
-import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.sort.SortException;
 import org.dspace.sort.SortOption;
@@ -33,14 +26,19 @@ import org.dspace.ui.exception.PageNotFoundException;
 import org.dspace.ui.utils.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * Controller for /handle paths
+ * Controller for /handle paths.
+ * <P>
+ * This Controller basically just determines what object we are dealing with
+ * and then forwards the request on to the appropriate object's controller.
+ * <P>
+ * For example, Item requests are forwarded to the ItemController.
+ * 
  * @author Tim Donohue
  */
 @Controller
@@ -51,7 +49,7 @@ public class HandleController extends DSpaceController
     // Path that this Controller responds to
     private static final String PATH = "/handle";
 
-    // This Controller responds to /handle/** path
+    // This Controller responds to /handle/*/* path
     @RequestMapping(PATH + "/*/*")
     public String handle(Model model, HttpServletRequest request)
             throws SQLException
@@ -77,16 +75,18 @@ public class HandleController extends DSpaceController
         }
         else if(dso instanceof Community)
         {
-            return displayCommunity(context, (Community) dso, model, request);
+            // Forward request to the CommunityController, passing it the handle
+            return "forward:/community?handle=" + handle;
         }
         else if(dso instanceof Collection)
         {
-            return displayCollection(context, (Collection) dso, model, request);
+            // Forward request to the CollectionController, passing it the handle
+            return "forward:/collection?handle=" + handle;
         }
         else if(dso instanceof Item)
         {
-            model.addAttribute("item", dso);
-            return "item";          // item.html
+            // Forward request to the ItemController, passing it the handle
+            return "forward:/item?handle=" + handle;
         }
         else
         {
@@ -94,102 +94,6 @@ public class HandleController extends DSpaceController
             throw new PageNotFoundException(path);
         }
     }
-
-    /**
-     * Display the homepage for a single Community
-     * @param context
-     * @param community
-     * @param model
-     * @param request
-     * @return
-     * @throws SQLException
-     */
-    public String displayCommunity(Context context, Community community, Model model, HttpServletRequest request)
-            throws SQLException
-    {
-        // Add all info the the model that we want to display
-        model.addAttribute("community", community);
-
-        // Get path to logo
-        Bitstream logo = community.getLogo();
-        String logoPath = null;
-        if(logo!=null)
-            logoPath = request.getContextPath() + "/retrieve/" + logo.getID();
-        model.addAttribute("logo", logoPath);
-
-        // Get other Community info for display
-        CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
-        model.addAttribute("name", community.getName());
-        model.addAttribute("intro", communityService.getMetadata(community, "introductory_text"));
-        model.addAttribute("copyright", communityService.getMetadata(community, "copyright_text"));
-        model.addAttribute("news", communityService.getMetadata(community, "side_bar_text"));
-
-        // Get recent submissions to this Community
-        // TODO: Won't work without hooking up Solr
-        // MAY NEED TO JUST RUN THIS AS A WAR alongside Solr, instead of standalone
-        // http://www.petrikainulainen.net/spring-data-solr-tutorial/
-        List<Item> recentSubmissions = getRecentSubmissions(context, community);
-        model.addAttribute("recentSubmissions", recentSubmissions);
-
-        // display community.html
-        return "community";
-    }
-
-    /**
-     * Display the homepage for a single Collection
-     * @param context
-     * @param collection
-     * @param model
-     * @param request
-     * @return
-     * @throws SQLException
-     */
-    public String displayCollection(Context context, Collection collection, Model model, HttpServletRequest request)
-            throws SQLException
-    {
-        // Add all info the the model that we want to display
-        model.addAttribute("collection", collection);
-
-        // Get path to logo
-        Bitstream logo = collection.getLogo();
-        String logoPath = null;
-        if(logo!=null)
-            logoPath = request.getContextPath() + "/retrieve/" + logo.getID();
-        model.addAttribute("logo", logoPath);
-
-        // Get other Collection info for display
-        CollectionService collectionService = ContentServiceFactory.getInstance().getCollectionService();
-        model.addAttribute("name", collection.getName());
-        model.addAttribute("intro", collectionService.getMetadata(collection, "introductory_text"));
-        model.addAttribute("copyright", collectionService.getMetadata(collection, "copyright_text"));
-        model.addAttribute("news", collectionService.getMetadata(collection, "side_bar_text"));
-
-        // Get recent submissions to this Collection
-        // TODO: Won't work without hooking up Solr
-        //List<Item> recentSubmissions = getRecentSubmissions(context, collection);
-        //model.addAttribute("recentSubmissions", recentSubmissions);
-
-        ItemService itemService = ContentServiceFactory.getInstance().getItemService();
-
-        // TODO: Not sure this is very scalable. Loads entire list into memory
-        // at once for pagination using Spring's PagedListHolder
-        // Solr queries would likely be better here
-        Iterator<Item> itemIterator = itemService.findByCollection(context, collection);
-        List<Item> itemList = IteratorUtils.toList(itemIterator);
-
-        PagedListHolder<Item> items = new PagedListHolder<>(itemList);
-        items.setPageSize(2);  // 10 items per page
-        if(request.getParameter("page")!=null)
-        {
-            int page = Integer.parseInt(request.getParameter("page"));
-            items.setPage(page);  // set current page
-        }
-        model.addAttribute("items", items);
-
-        // display collection.html
-        return "collection";
-    }
-
 
     /**
 	 * Obtain the recent submissions from the given container object.  This

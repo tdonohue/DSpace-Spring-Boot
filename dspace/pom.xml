@@ -152,18 +152,17 @@
     <dependencies>
     	<!-- This dependency ensures DSpace OAI JAR is added to [dspace]/lib/,
              so that the 'dspace oai' launcher.xml command works.  -->
-    	<dependency>
+        <!--<dependency>
             <groupId>org.dspace</groupId>
             <artifactId>dspace-oai</artifactId>
             <type>jar</type>
             <classifier>classes</classifier>
-    	</dependency>
+        </dependency>-->
         <!-- The Servlet API is also needed by the 'dspace oai' launcher.xml
              command. -->
     	<dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

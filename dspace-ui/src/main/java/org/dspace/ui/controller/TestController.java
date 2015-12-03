@@ -71,4 +71,13 @@ public class TestController extends DSpaceController
         return "test";
     }
 
+    /**
+     * This is an example exception mapped to "/foo" path, which lets us
+     * just test out exception handling, etc.
+     * @return 
+     */
+    @RequestMapping("/foo")
+    public String foo() {
+            throw new RuntimeException("Example Runtime Exception thrown from 'foo'");
+    }
 }

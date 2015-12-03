@@ -57,5 +57,5 @@ public class HomeController extends DSpaceController
         // Load home.html view
         return "home";
     }
-
+    
 }

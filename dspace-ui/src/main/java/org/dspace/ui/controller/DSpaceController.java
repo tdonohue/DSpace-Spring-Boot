@@ -181,7 +181,7 @@ public class DSpaceController
         // First, remove any starting slash (if any)
         if(path.startsWith("/"))
             path = path.substring(1);
-
+        
         // Split path on slashes, so that we can generate a breadcrumb
         // for each part of this path.
         String[] paths = path.split("/");

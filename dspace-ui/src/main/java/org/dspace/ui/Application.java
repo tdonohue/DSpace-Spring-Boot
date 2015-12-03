@@ -16,14 +16,20 @@ import org.dspace.ui.filter.DSpaceRequestContextFilter;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Define the Application settings itself. This class takes the place of a
- * web.xml file, and configures all Filters/Listeners as methods (see below).
+ * Define the Spring Boot Application settings itself. This class takes the place 
+ * of a web.xml file, and configures all Filters/Listeners as methods (see below).
  * <P>
  * NOTE: Requires a Servlet 3.0 container, e.g. Tomcat 7.0 or above.
  * <p>
@@ -159,5 +165,5 @@ public class Application extends SpringBootServletInitializer
             System.out.println(beanName);
         }*/
     }
-
+    
 }

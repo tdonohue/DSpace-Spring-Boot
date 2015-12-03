@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+
+<body>
+    <div th:replace="layout :: navbar">(navbar)</div>
+    
+    <div class="container">
+        <div class="starter-template">
+            <!--/* <h2 th:text="${title}">ERROR</h2>*/-->
+            <h2>ERROR!</h2>
+            
+            <!--/* NOTE: Error attributes are provided automatically. For a list see:
+                   http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/DefaultErrorAttributes.html */-->
+            <div class="alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <strong>There was an unexpected error (type=<span th:text="${error}">(error-type)</span>, status=<span th:text="${status}">(error-status-code)</span>, path=<span th:text="${path}">(path)</span>).</strong>
+                <div id="created" th:text="${#dates.format(timestamp)}">(date/time)</div>
+                <div th:text="${message}">(error message)</div>
+                <div class="hidden"><pre th:text="'Stacktrace: ' + ${trace}">(stacktrace)</pre></div>
+            </div>
+            
+            <div>
+                <strong>Please contact the system administrator with the above information.</strong>
+            </div>
+            <div><em>(View source for stacktrace)</em></div>
+        </div>
+    </div>
+    
+    
+    <div th:include="layout :: footer" id="footer">(footer)</div>
+</body>
+</html>

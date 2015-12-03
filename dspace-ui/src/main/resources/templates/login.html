@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+
+<body onload="document.form.username.focus();">
+    <div th:replace="layout :: navbar">(navbar)</div>
+    
+    <div class="container">
+        <div class="starter-template">
+            <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                Invalid username and password.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-info" role="alert">
+                You have been logged out.
+            </div>
+            <h2>Login with Username and Password</h2>
+            <form name="form" th:action="@{/login}" method="POST">
+                <fieldset>
+                    <label>Username: <input type="text" name="username"/> </label><br/>
+                    <label>Password: <input type="password" name="password"/> </label><br/>
+                    <input type="submit" value="Sign In" class="btn btn-primary"/>
+                </fieldset>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </div>
+    </div>
+    
+    
+    <div th:include="layout :: footer" id="footer">(footer)</div>
+</body>
+</html>

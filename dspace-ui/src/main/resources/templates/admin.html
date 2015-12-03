@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+
+<body>
+    <div th:replace="layout :: navbar">(navbar)</div>
+    
+    <div class="container">
+        <div class="starter-template">
+            <h2>Welcome Site Administrator!</h2>
+            <p class="lead">This page is for admins only!</p>
+
+            <p>If you can see this page, you are a member of the ADMIN role. All other users are forbidden from seeing this page</p>
+        </div>
+    </div>
+    
+    
+    <div th:include="layout :: footer" id="footer">(footer)</div>
+</body>
+</html>

@@ -9,13 +9,18 @@ package org.dspace.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
 /**
  * Web Application Security Configuration, via Spring Security
@@ -26,6 +31,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 {
+    // Role constants
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_OBJECT_ADMIN = "OBJECT_ADMIN";
+    public static final String ROLE_USER = "USER";
     
     @Override
     public void configure(WebSecurity web) throws Exception 
@@ -42,11 +51,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception 
     {
         http
-            // Require authorization for /edit paths
+            // Use a custom handler (defined below) to manage our role hierarchy
+            // Require USER role for /edit paths
             // Require ADMIN role for /admin paths
             .authorizeRequests()
-                .antMatchers("/edit/**").authenticated()
-                .antMatchers("/admin/**").hasRole("ADMIN")
+                .expressionHandler(webExpressionHandler()) 
+                .antMatchers("/edit/**").hasRole(ROLE_USER)
+                .antMatchers("/admin/**").hasRole(ROLE_ADMIN)
                 .anyRequest().permitAll()
                 .and()
             .formLogin()
@@ -56,6 +67,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
             .logout()
                 .permitAll();
     }
+    
+    /**
+     * Define a Role Hierarchy for DSpace Authorization.
+     * NOTE: We could also define this in configuration (as the hierarchy definition is just a string)!
+     * NOTE: In the hierarchy definition, all roles need to be prefixed by "ROLE_[rolename]"
+     * @return 
+     */
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_OBJECT_ADMIN and ROLE_OBJECT_ADMIN > ROLE_USER");
+        return roleHierarchy;
+    }
+    
+    /**
+     * Enable the above Role Hierarchy
+     * @return 
+     */
+    private SecurityExpressionHandler<FilterInvocation> webExpressionHandler() {
+            DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
+            defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
+            return defaultWebSecurityExpressionHandler;
+        }
 
     /**
      * A hack for now. We're going to hardcode a single valid user here.
@@ -74,7 +108,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
             // Define a two valid user accts / roles
             auth.inMemoryAuthentication()
-                .withUser("admin").password("dspace").roles("ADMIN","USER").and()
-                .withUser("user").password("dspace").roles("USER");
+                .withUser("admin").password("dspace").roles(ROLE_ADMIN).and()
+                .withUser("user").password("dspace").roles(ROLE_USER);
     }
 }

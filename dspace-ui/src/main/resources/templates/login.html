@@ -15,15 +15,35 @@
             <div th:if="${param.logout}" class="alert alert-info" role="alert">
                 You have been logged out.
             </div>
-            <h2>Login with Username and Password</h2>
-            <form name="form" th:action="@{/login}" method="POST">
-                <fieldset>
-                    <label>Username: <input type="text" name="username"/> </label><br/>
-                    <label>Password: <input type="password" name="password"/> </label><br/>
-                    <input type="submit" value="Sign In" class="btn btn-primary"/>
-                </fieldset>
+            <h2>Sign In with Username and Password</h2>
+            <form name="form" th:action="@{/login}" method="POST" class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="username" class="col-sm-2 control-label">Username</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Username"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-2 control-label">Password</label>
+                    <div class="col-sm-6">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-6">
+                        <input type="submit" value="Sign In" class="btn btn-primary"/>
+                    </div>
+                </div>
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
+            <br/>
+            <div class="text-muted col-sm-offset-2 col-sm-6">
+                HINT: There's just two accounts right now (both with a password of 'dspace'):
+                <ul>
+                    <li class="text-muted">'user' has a USER role</li>
+                    <li class="text-muted">'admin' has an ADMIN role</li>
+                </ul>
+            </div>
         </div>
     </div>
     

@@ -9,6 +9,7 @@ dt {
   padding-top: 10px;
 }
 
-.breadcrumb {
-  background-color: red;
+.navbar-inverse {
+  background-image: none;
+  background-color: #0000cc;
 }

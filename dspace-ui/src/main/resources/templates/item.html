@@ -10,17 +10,25 @@
         <div class="starter-template">
 
             <div class="row">
+                <!--/* Allow USER role to edit */-->
+                <div sec:authorize="hasRole('ROLE_USER')" class="pull-right">
+                    <form th:action="@{${itemModel.link} + '/edit'}" method="get">
+                        <button type="submit" class="btn btn-default">Edit</button>
+                    </form>
+                </div>
                 <!--/* Item Title */-->
-                <h2 th:text="${title}">(Item Title)</h2>
+                <h2 th:text="${itemModel.getMetadataFirstValue('dc.title')}">(Item Title)</h2>
+                
                 <!--/* Authors */-->
-                <!--/* This defines a local variable named 'authorFields' and only displays its value if not null */-->
-                <div th:with="authorFields = ${itemService.getMetadata(item,'dc','creator','*','*')}">
+                <!--/* This defines a local variable named 'authors' and only displays its value if not null */-->
+                <!--/* This statement is a bit uglier than it needs to be, but we need to look at BOTH dc.creator and dc.contributor.author */-->
+                <div th:with="authors = ${itemModel.getMetadataValues('dc.creator')} ? ${itemModel.getMetadataValues('dc.creator')} : ${itemModel.getMetadataValues('dc.contributor.author')}">
                     <em>
                         <!--/* List of authors, separated by semicolons */-->
-                        <th:block th:each="authorField,iterStat : ${authorFields}">
+                        <th:block th:each="author,iterStat : ${authors}">
                             <!--/* If last object, don't add a comma after name. Otherwise, add a semi-colon */-->
-                            <span th:if="${iterStat.last}" th:text="${authorField.value}">(Author Name)</span>
-                            <span th:unless="${iterStat.last}" th:text="${authorField.value} + '; '">(Author Name);</span>
+                            <span th:if="${iterStat.last}" th:text="${author}">(Author Name)</span>
+                            <span th:unless="${iterStat.last}" th:text="${author} + '; '">(Author Name);</span>
                         </th:block>
                     </em>
                 </div>
@@ -35,12 +43,12 @@
                         <!--/* File Listing */-->
                         <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(bitstreams)}"></dt>
                         <dd th:each="bitstream : ${bitstreams}">
-                           <a href="#" th:href="@{'/bitstream/handle/' + ${item.handle} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">(File Name)</a>
+                           <a href="#" th:href="@{'/bitstream/' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">(File Name)</a>
                         </dd>
 
                         <!--/* Issued Date (uses I18N) */-->
                         <!--/* This defines a local variable named 'date' and only displays its value if not null */-->
-                        <th:block th:with="date = ${itemService.getMetadataFirstValue(item,'dc','date','issued','*')}">
+                        <th:block th:with="date = ${itemModel.getMetadataFirstValue('dc.date.issued')}">
                             <dt th:text="#{item.label.dc.date.issued}">(Date)</dt>
                             <dd th:text="${date}">(Date value)</dd>
                         </th:block>
@@ -52,23 +60,23 @@
                     <dl style="padding-top:10px">
                         <!--/* Abstract */-->
                         <!--/* This defines a local variable named 'abstract' and only displays its value if not null */-->
-                        <th:block th:with="abstract = ${itemService.getMetadataFirstValue(item,'dc','description','abstract','*')}">
+                        <th:block th:with="abstract = ${itemModel.getMetadataFirstValue('dc.description.abstract')}">
                             <dt th:text="#{item.label.dc.description.abstract}" class="hidden">(Abstract)</dt>
                             <dd th:text="${abstract}">(Abstract text)</dd>
                         </th:block>
 
                         <!--/* URIs */-->
                         <!--/* Only display URIs if one or more exist */-->
-                        <th:block th:with="uriFields = ${itemService.getMetadata(item,'dc','identifier','uri','*')}">
+                        <th:block th:with="uris = ${itemModel.getMetadataValues('dc.identifier.uri')}">
                             <dt th:text="#{item.label.dc.identifier.uri}">(URI)</dt>
-                            <dd th:each="uriField : ${uriFields}" th:text="${uriField.value}">(URI value)</dd>
+                            <dd th:each="uri : ${uris}" th:text="${uri}">(URI value)</dd>
                         </th:block>
 
                         <!--/* Subjects */-->
                         <!--/* Only display Subjects if one or more exist */-->
-                        <th:block th:with="subjectFields = ${itemService.getMetadata(item,'dc','subject','*','*')}">
+                        <th:block th:with="subjects = ${itemModel.getMetadataValues('dc.subject')}">
                             <dt th:text="#{item.label.dc.subject}">(Subject)</dt>
-                            <dd th:each="subjectField : ${subjectFields}" th:text="${subjectField.value}">(Subject value)</dd>
+                            <dd th:each="subject : ${subjects}" th:text="${subject}">(Subject value)</dd>
                         </th:block>
                     </dl>
                 </div>

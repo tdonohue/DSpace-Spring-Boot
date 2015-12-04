@@ -56,8 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
             // Require ADMIN role for /admin paths
             .authorizeRequests()
                 .expressionHandler(webExpressionHandler()) 
-                .antMatchers("/edit/**").hasRole(ROLE_USER)
-                .antMatchers("/admin/**").hasRole(ROLE_ADMIN)
+                .antMatchers("/edit/**","/**/edit").hasRole(ROLE_USER)
+                .antMatchers("/admin/**","/**/admin").hasRole(ROLE_ADMIN)
                 .anyRequest().permitAll()
                 .and()
             .formLogin()

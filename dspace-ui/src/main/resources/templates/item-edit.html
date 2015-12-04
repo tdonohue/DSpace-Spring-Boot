@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+
+<body>
+    <div th:replace="layout :: navbar">(navbar)</div>
+    
+    <div class="container">
+        <div class="starter-template">
+
+            <div class="row">
+                <!--/* Item Title */-->
+                <h2 th:text="'Editing ' + ${itemModel.getMetadataFirstValue('dc.title')}">(Item Title)</h2>
+                
+                <!--/* Editing form */-->
+                <!-- NOTE: Form has been temporarily turned off, as it's not fully complete and will throw errors.
+                     To re-enable, replace the below <form> tag with this one:
+                <form action="#" th:action="@{'/edit/item?handle='+ *{handle}}" th:object="${itemModel}" method="post" class="form-horizontal" role="form">
+                -->
+                <form action="#" th:action="@{'/handle/'+ *{handle}}" th:object="${itemModel}" method="get" class="form-horizontal" role="form">
+                    <!--/* Item Title Editing */-->
+                    <div class="form-group">
+                        <label for="title" class="col-sm-2 control-label">Title</label>
+                        <div class="col-sm-6">
+                           <input th:each="value,valueStat : *{getMetadataValues('dc.title')}" type="text" class="form-control" id="title" name="title" th:value="${value}"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* Author Editing */-->
+                    <div class="form-group">
+                        <label for="author" class="col-sm-2 control-label">Author</label>
+                        <div class="col-sm-6">
+                            <input th:each="value : *{getMetadataValues('dc.creator')}" type="text" class="form-control" id="author" name="author" th:value="${value}"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* Issued Date */-->
+                    <!--/* To show off form validation, our itemModel has a special issuedDate field */-->
+                    <div class="form-group">
+                        <label for="dateIssued" class="col-sm-2 control-label">Issued Date</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" th:field="*{dateIssued}" th:errorclass="fieldError"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* Abstract */-->
+                    <div class="form-group">
+                        <label for="abstract" class="col-sm-2 control-label">Abstract</label>
+                        <div class="col-sm-6">
+                            <textarea rows="3" th:each="value : *{getMetadataValues('dc.description.abstract')}" class="form-control" id="abstract" name="abstract" th:text="${value}"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* Subjects */-->
+                    <div class="form-group">
+                        <label for="subject" class="col-sm-2 control-label">Subject(s)</label>
+                        <div class="col-sm-6">
+                            <input th:each="value : *{getMetadataValues('dc.subject')}" type="text" class="form-control" id="subject" name="subject" th:value="${value}"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* URI */-->
+                    <div class="form-group">
+                        <label for="uri" class="col-sm-2 control-label">URI(s)</label>
+                        <div class="col-sm-6">
+                            <input th:each="value : *{getMetadataValues('dc.identifier.uri')}" type="text" class="form-control" id="uri" name="uri" th:value="${value}"/>
+                        </div>
+                    </div>
+                    
+                    <!--/* THIS PRINTS OUT EVERY METADATA FIELD, with the key as the label
+                    <div class="form-group" th:each="field,stat: *{allMetadataEntries}">
+                        <label th:for="${field.key+stat.index}" class="col-sm-2 control-label" th:text='${field.key}'></label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" th:id="${field.key+stat.index}" th:field="*{allMetadataEntries[__${stat.index}__].value}"/>
+                        </div>
+                    </div> */-->
+                    
+                    <!--/* Buttons */-->
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-6">
+                            <input type="submit" value="Submit" class="btn btn-primary" /> <input type="reset" value="Reset" class="btn btn-default" />
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Currently this form doesn't actually do anything.</strong>
+                        While this 'edit' page is access restricted (to USER role), 
+                        clicking submit will just take you back to the Item view. Sorry, I ran out of time.
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:include="layout :: footer" id="footer">(footer)</div>
+</body>
+</html>

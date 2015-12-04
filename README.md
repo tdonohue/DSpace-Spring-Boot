@@ -25,6 +25,7 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
 
 1. Find a (pre-6) DSpace Installation Directory (Unfortunately, this won't work with DSpace 5 as it requires the Service API refactor).
   * If you don't have one, you can run `mvn clean package; cd dspace/target/dspace-installer; ant fresh_install` to create one.
+  * You'll also need some content, as this prototype doesn't yet have editing/creating capabilities built in. So, either use another UI or an AIP restore.
 2. Move into the DSpace UI folder
   * `cd dspace-ui`
 2. Copy the default `application.properties` for this Spring Boot Application to the root directory. 

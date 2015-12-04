@@ -88,3 +88,30 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
   * Obviously, since this page is essentially HTML, the overall layout of the page can also be adjusted easily by anyone familiar with HTML / CSS / Bootstrap.
 - [x] New links in Navigation
   * Again, this could be adjusted in `layout.html` by anyone who is comfortable with HTML / CSS / Bootstrap.
+
+
+## Modularization Capabilities
+
+* Support for optional modules/features/add-ons (These are all brainstorms and not yet implemented)
+   * All modules should be Spring-Boot-enabled..this means the following:
+     * If they create their own page(s), they need to define their own Spring Boot Controllers (`@Controller`) & Views (Thymeleaf HTML pages). Spring Boot will automatically recognize the Controllers and include them.
+     * Backend classes/beans should be Spring enabled (again so they are auto-discovered)
+   * If a module/addon needed to modify or insert content into an existing page, it likely would need to define one (or more) Thymeleaf HTML fragments (see `layout.html`) which could be included into whatever pages need them. This might mean a small amount of manual editing of an existing page (to insert that include statement), or simply overriding the default `@Controller` class to load a *new* copy of the page.
+     * For example, if new fields were needed to be displayed in the Item View (`item.html`), then it might either involve adding a new `<div th:include ..>` into that file manually...OR, the Module could override the default `ItemController` to load a custom version of `item.html` which has those tweaks already in it. 
+
+## Additional Prototype Documentation
+
+- [x] Prototype Design is described at the top of this page
+- [x] Prototype Installation is also described above
+- [x] Internationalization (i18n)
+   * The prototype already includes some basic internationalization examples (using the built in i18n options in Spring Boot + Thymeleaf)
+   * i18n is controlled via a [`messages.properties`](https://github.com/tdonohue/DSpace-Spring-Boot/blob/spring-boot-ui/dspace-ui/src/main/resources/i18n/messages.properties) file
+   * Currently, it's only used/enabled on the Item View page ([`item.html`](https://github.com/tdonohue/DSpace-Spring-Boot/blob/spring-boot-ui/dspace-ui/src/main/resources/templates/item.html)). For example, this attribute: `th:text="#{item.label.bitstreams}"` says to change the text of the given HTML field to be the value of `item.label.bitstreams` from `messages.properties`
+ - [x] Additional Theming Capabilities
+   * Basic (CSS/layout) theming is already provided in the prototype. But, I suspect we should be able to enhance it such that most "themes" would really just consist of custom CSS + a custom `layout.html`.
+   * It might even be possible for Themes to simply be a directory that has a single `layout.html` along with any necessary CSS/images.
+   * The Theme directory could then be "dropped into" a specific location (/src/main/resources/themes/), where it could be kept separate from the core HTML files. Then it could be enabled via a configuration (similar to in this prototype).
+ - [x] Support for common DSpace Authentication mechanisms
+   * If we went with Spring Boot, I'd recommend we move Authentication & Authorization entirely to Spring Security
+   * It already provides modules supporting all our major Authentication options (database-based, LDAP, Shibboleth, etc), plus other new ones (OAuth).
+   * It also provides a highly configurable Authorization framework, which integrates much better with Spring Boot and Spring in general.

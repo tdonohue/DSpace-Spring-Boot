@@ -115,9 +115,10 @@ public class ItemController extends DSpaceController
 
         // If we had validation errors, return to item edit page
         if(result.hasErrors()) {
-            model.addAttribute("itemModel", itemModel);
-            return "item-edit";
-            //return displayItemEdit(context, item, model, request);
+            log.error( "There are form errors! {}", result );
+            //model.addAttribute("itemModel", itemModel);
+            //return "item-edit";
+            return displayItemEdit(context, item, model, request);
         }
 
         for(MetadataEntry entry : itemModel.getAllMetadataEntries())

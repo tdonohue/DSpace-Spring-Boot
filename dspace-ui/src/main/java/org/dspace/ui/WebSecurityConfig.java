@@ -120,7 +120,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
             // Define a two valid user accts / roles
             auth.inMemoryAuthentication()
-                .withUser("admin").password("dspace").roles(ROLE_ADMIN).and()
+                .withUser("admin").password("dspace").roles(ROLE_ADMIN, ROLE_USER).and()
                 .withUser("user").password("dspace").roles(ROLE_USER);
     }
 }

@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
-<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+<!--/* Include the 'htmlhead' fragment in the 'layout.html' of our theme */-->
+<head th:include="@{'../static/themes/' + ${theme} + '/layout'} :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
 
 <body>
-    <div th:replace="layout :: navbar">(navbar)</div>
+    <div th:replace="@{'../static/themes/' + ${theme} + '/layout'} :: navbar">(navbar)</div>
     
     <div class="container">
         <div class="starter-template">
@@ -25,10 +26,10 @@
                 <div th:with="authors = ${itemModel.getMetadataValues('dc.creator')} ? ${itemModel.getMetadataValues('dc.creator')} : ${itemModel.getMetadataValues('dc.contributor.author')}">
                     <em>
                         <!--/* List of authors, separated by semicolons */-->
-                        <th:block th:each="author,iterStat : ${authors}">
+                        <th:block th:each="author,iterationStatus : ${authors}">
                             <!--/* If last object, don't add a comma after name. Otherwise, add a semi-colon */-->
-                            <span th:if="${iterStat.last}" th:text="${author}">Smith, Joan</span>
-                            <span th:unless="${iterStat.last}" th:text="${author} + '; '">Miller, John</span>
+                            <span th:if="${iterationStatus.last}" th:text="${author}">Smith, Joan</span>
+                            <span th:unless="${iterationStatus.last}" th:text="${author} + '; '">Miller, John</span>
                         </th:block>
                     </em>
                 </div>
@@ -85,6 +86,6 @@
         </div>
     </div>
 
-    <div th:include="layout :: footer" id="footer">(footer)</div>
+    <div th:include="@{'../static/themes/' + ${theme} + '/layout'} :: footer" id="footer">(footer)</div>
 </body>
 </html>

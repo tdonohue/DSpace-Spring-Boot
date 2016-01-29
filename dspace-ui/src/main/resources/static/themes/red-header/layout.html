@@ -22,13 +22,13 @@
     <meta name="Generator" th:content="${appName}"/>
     <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
 
-    <title th:text="${title}">My Layout</title>
+    <title th:text="${title}">Red Header Theme</title>
 
     <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
     <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet"/>
     <!--/* NOTE: theme is determined dynamically in DSpaceController. If it doesn't exist, a default.css is used */-->
-    <link th:if="${theme}" th:href="@{'/css/' + ${theme} + '.css'}" rel="stylesheet"/>
-    <link th:unless="${theme}" th:href="@{'/css/default.css'}" href="../static/css/default.css" rel="stylesheet"/>
+    <link th:if="${theme}" th:href="@{'/themes/' + ${theme} + '/styles.css'}" rel="stylesheet"/>
+    <link th:unless="${theme}" th:href="@{'/themes/default/styles.css'}" href="styles.css" rel="stylesheet"/>
   </head>
 
   <body>
@@ -84,13 +84,11 @@
       </ul>
     </nav>
 
-
-
     <!-- Sample content -->
     <div class="container">
       <div class="starter-template">
-        <h1>Spring Boot/Thymeleaf/Bootstrap</h1>
-        <p class="lead" th:text="${greeting}">(greeting)</p>
+        <h1>DSpaceUI Red Theme</h1>
+        <p class="lead" th:text="${greeting}">This theme has a red header</p>
       </div>
     </div>
 

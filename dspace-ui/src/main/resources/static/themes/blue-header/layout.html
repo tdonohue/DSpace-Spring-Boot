@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--/*
+  This layout file defines HTML fragments which correspond to the layout of the
+  site. These HTML fragments can then be referenced from other template files.
+
+  While for this prototype, I created all the fragments in a single HTML file (for simplicity),
+  it is also possible to create separate files for each fragment. For more info
+  see:
+    * http://www.thymeleaf.org/doc/articles/layouts.html
+    * http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#template-layout
+
+  HTML is based on the Bootstrap starter template at http://getbootstrap.com/examples/starter-template/
+*/-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    
+  <!-- "htmlhead" fragment -->
+  <head th:fragment="htmlhead">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="Generator" th:content="${appName}"/>
+    <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
+
+    <title th:text="${title}">Blue Header Theme</title>
+
+    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet"/>
+    <!--/* NOTE: theme is determined dynamically in DSpaceController. If it doesn't exist, a default.css is used */-->
+    <link th:if="${theme}" th:href="@{'/themes/' + ${theme} + '/styles.css'}" rel="stylesheet"/>
+    <link th:unless="${theme}" th:href="@{'/themes/default/styles.css'}" href="styles.css" rel="stylesheet"/>
+  </head>
+
+  <body>
+    <!-- "navbar" fragment -->  
+    <nav th:fragment="navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img alt="DSpace" src="/themes/blue-header/DSpace-logo-line.svg"/></a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/test">TestPage</a></li>
+            <li><a href="#about">About</a></li>
+            <!--/* This link is only displayed for ROLE_ADMIN */-->
+            <!--/* NOTE: Other available expressions at: https://docs.spring.io/spring-security/site/docs/3.0.x/reference/el-access.html */-->
+            <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Admin</a></li>
+            <!--<li><a href="#contact">Contact</a></li>-->
+          </ul>
+          <!--/* If authenticated, display user info and logout link */-->
+          <div sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post" class="navbar-form navbar-right">
+                <button type="submit" class="btn btn-default btn-navbar">Sign Out</button>
+            </form>
+            <div class="navbar-text navbar-right">
+                <span class="glyphicon glyphicon-user white"></span>
+                Signed in as <span sec:authentication="name">(username)</span>
+            </div>
+          </div>
+          <!--/* If anonymous, provide a login button */-->
+          <div sec:authorize="isAnonymous()">
+            <!--/* Use GET so that this just redirects to login page instead of attempting a login */-->
+            <form th:action="@{/login}" method="get" class="navbar-form navbar-right">
+                <button type="submit" class="btn btn-default btn-navbar">Sign In</button>
+            </form>
+          </div>
+        </div>
+        
+      </div>
+      <ul class="breadcrumb">
+        <!--/* "breadCrumbList" is the default name of List<BreadCrumb> */-->
+        <li th:each="crumb : ${breadCrumbList}">
+           <!--/* Add a links for all crumbs EXCEPT the last one */-->
+           <a th:href="${crumb.path}" th:unless="${crumb.equals(breadCrumbList.getLast())}" th:text="${crumb.label}">(breadcrumbs)</a>
+           <span th:if="${crumb.equals(breadCrumbList.getLast())}" th:text="${crumb.label}">(breadcrumbs)</span>
+        </li>
+      </ul>
+    </nav>
+
+
+
+    <!-- Sample content -->
+    <div class="container">
+      <div class="starter-template">
+        <h1>DSpaceUI Blue Theme</h1>
+        <p class="lead" th:text="${greeting}">This is a theme featuring a blue header</p>
+      </div>
+    </div>
+
+    <!--"footer" fragment -->
+    <div th:fragment="footer" id="footer">
+      <div class="container">
+        <hr/>
+        <p class="text-muted">Demo of Spring Boot + Thymeleaf + Bootstrap</p>
+        <p class="text-muted">Built on DSpace technology</p>
+      </div>
+      <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+      <script th:src="@{/webjars/bootstrap/3.3.5/js/bootstrap.min.js}"></script>
+    </div>
+
+  </body>
+</html>

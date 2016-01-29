@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
-<head th:include="layout :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+<!--/* Include the 'htmlhead' fragment in the 'layout.html' of our theme */-->
+<head th:include="@{'../static/themes/' + ${theme} + '/layout'} :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
 
 <body>
-    <div th:replace="layout :: navbar">(navbar)</div>
+    <div th:replace="@{'../static/themes/' + ${theme} + '/layout'} :: navbar">(navbar)</div>
     
     <div class="container">
         <div class="starter-template">
@@ -29,6 +30,6 @@
     </div>
     
     
-    <div th:include="layout :: footer" id="footer">(footer)</div>
+    <div th:include="@{'../static/themes/' + ${theme} + '/layout'} :: footer" id="footer">(footer)</div>
 </body>
 </html>

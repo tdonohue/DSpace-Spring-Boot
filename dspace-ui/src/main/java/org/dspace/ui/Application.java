@@ -81,9 +81,9 @@ public class Application extends SpringBootServletInitializer
 	}*/
 
     /**
-     * Register the "DSpaceKernelServletContextListener" so that it is loaded
+     * Register the "TestListener" so that it is loaded
      * for this Application.
-     * @return DSpaceKernelServletContextListener
+     * @return TestListener
      */
     @Bean
     public TestListener testListener() {

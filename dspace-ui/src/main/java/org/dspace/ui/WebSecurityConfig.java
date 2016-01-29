@@ -64,10 +64,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
             // Use a custom handler (defined below) to manage our role hierarchy
             // Require USER role for /edit paths
             // Require ADMIN role for /admin paths
+            // Don't allow ANYONE to view Theme layout.html pages (which are Thymeleaf templates)
             .authorizeRequests()
                 .expressionHandler(webExpressionHandler()) 
                 .antMatchers("/edit/**","/**/edit").hasRole(ROLE_USER)
                 .antMatchers("/admin/**","/**/admin").hasRole(ROLE_ADMIN)
+                .antMatchers("/themes/**/layout.html").denyAll()
                 .anyRequest().permitAll()
                 .and()
             .formLogin()

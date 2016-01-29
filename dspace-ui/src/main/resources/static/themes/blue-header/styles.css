@@ -11,5 +11,9 @@ dt {
 
 .navbar-inverse {
   background-image: none;
-  background-color: #0000cc;
+  background-color: #1f3f5e;
+}
+
+.breadcrumb {
+  background-color: #aab8c6;
 }

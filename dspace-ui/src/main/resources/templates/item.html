@@ -17,7 +17,7 @@
                     </form>
                 </div>
                 <!--/* Item Title */-->
-                <h2 th:text="${itemModel.getMetadataFirstValue('dc.title')}">(Item Title)</h2>
+                <h2 th:text="${itemModel.getMetadataFirstValue('dc.title')}">My Item Title</h2>
                 
                 <!--/* Authors */-->
                 <!--/* This defines a local variable named 'authors' and only displays its value if not null */-->
@@ -27,8 +27,8 @@
                         <!--/* List of authors, separated by semicolons */-->
                         <th:block th:each="author,iterStat : ${authors}">
                             <!--/* If last object, don't add a comma after name. Otherwise, add a semi-colon */-->
-                            <span th:if="${iterStat.last}" th:text="${author}">(Author Name)</span>
-                            <span th:unless="${iterStat.last}" th:text="${author} + '; '">(Author Name);</span>
+                            <span th:if="${iterStat.last}" th:text="${author}">Smith, Joan</span>
+                            <span th:unless="${iterStat.last}" th:text="${author} + '; '">Miller, John</span>
                         </th:block>
                     </em>
                 </div>
@@ -43,14 +43,14 @@
                         <!--/* File Listing */-->
                         <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(bitstreams)}"></dt>
                         <dd th:each="bitstream : ${bitstreams}">
-                           <a href="#" th:href="@{'/bitstream/' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">(File Name)</a>
+                           <a href="#" th:href="@{'/bitstream/' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">File</a>
                         </dd>
 
                         <!--/* Issued Date (uses I18N) */-->
                         <!--/* This defines a local variable named 'date' and only displays its value if not null */-->
                         <th:block th:with="date = ${itemModel.getMetadataFirstValue('dc.date.issued')}">
-                            <dt th:text="#{item.label.dc.date.issued}">(Date)</dt>
-                            <dd th:text="${date}">(Date value)</dd>
+                            <dt th:text="#{item.label.dc.date.issued}">Date</dt>
+                            <dd th:text="${date}">2016-01-01</dd>
                         </th:block>
                     </dl>
                 </div>
@@ -61,22 +61,22 @@
                         <!--/* Abstract */-->
                         <!--/* This defines a local variable named 'abstract' and only displays its value if not null */-->
                         <th:block th:with="abstract = ${itemModel.getMetadataFirstValue('dc.description.abstract')}">
-                            <dt th:text="#{item.label.dc.description.abstract}" class="hidden">(Abstract)</dt>
-                            <dd th:text="${abstract}">(Abstract text)</dd>
+                            <dt th:text="#{item.label.dc.description.abstract}" class="hidden">Abstract</dt>
+                            <dd th:text="${abstract}">Sample abstract of text</dd>
                         </th:block>
 
                         <!--/* URIs */-->
                         <!--/* Only display URIs if one or more exist */-->
                         <th:block th:with="uris = ${itemModel.getMetadataValues('dc.identifier.uri')}">
-                            <dt th:text="#{item.label.dc.identifier.uri}">(URI)</dt>
-                            <dd th:each="uri : ${uris}" th:text="${uri}">(URI value)</dd>
+                            <dt th:text="#{item.label.dc.identifier.uri}">URI</dt>
+                            <dd th:each="uri : ${uris}" th:text="${uri}">http://sample.com/uri</dd>
                         </th:block>
 
                         <!--/* Subjects */-->
                         <!--/* Only display Subjects if one or more exist */-->
                         <th:block th:with="subjects = ${itemModel.getMetadataValues('dc.subject')}">
-                            <dt th:text="#{item.label.dc.subject}">(Subject)</dt>
-                            <dd th:each="subject : ${subjects}" th:text="${subject}">(Subject value)</dd>
+                            <dt th:text="#{item.label.dc.subject}">Subject</dt>
+                            <dd th:each="subject : ${subjects}" th:text="${subject}">Sample Subject</dd>
                         </th:block>
                     </dl>
                 </div>

@@ -27,8 +27,8 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
  * @author Tim Donohue
  */
 @Configuration
-@EnableWebSecurity
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@EnableWebSecurity                               // Enable SpringSecurity autoconfiguration
+@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER) // Override default access rules
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 {
     // Role constants
@@ -36,6 +36,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     public static final String ROLE_OBJECT_ADMIN = "OBJECT_ADMIN";
     public static final String ROLE_USER = "USER";
     
+    /**
+     * Override default settings for paths to ignore for autentication
+     * @param web
+     * @throws Exception 
+     */
     @Override
     public void configure(WebSecurity web) throws Exception 
     {
@@ -47,6 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
            .antMatchers("/robots.txt");
     }
     
+    /**
+     * Override default settings for paths to require authentication
+     * @param http
+     * @throws Exception 
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception 
     {

@@ -75,10 +75,11 @@ public class DSpaceController
     @ModelAttribute("applicationName")
     public String getApplicationName()
     {
-        return applicationName;
+        // Pull application name from DSpace configuration
+        return configurationService.getProperty("dspace.name");
+        //return applicationName;
     }
 
-    
     /**
      * Add several key attributes to our model at once. These attributes
      * help to drive our theme / layout (e.g. breadcrumbs, theme, etc)
@@ -92,7 +93,14 @@ public class DSpaceController
         List<BreadCrumb> breadcrumbs = getBreadCrumbs(request);
         model.addAttribute(breadcrumbs);
 
-        String default_theme = env.getProperty(THEME_SETTING);
+        // Look for default theme configuration in DSpace configuration first
+        // Look in DSpace config first
+        String default_theme = configurationService.getProperty(THEME_SETTING);
+
+        // If not there, default to one in application.properties (Spring Boot config)
+        if(default_theme==null || default_theme.isEmpty())
+            default_theme = env.getProperty(THEME_SETTING);
+
         String theme = null;
         // Now, based on our breadcrumbs, determine our theme!
         for(BreadCrumb crumb: breadcrumbs)
@@ -102,18 +110,25 @@ public class DSpaceController
             // For example, this theme will be applied to anything under /handle/1234/5678
             //    dspace.theme.handle.1234.5678 = mytheme
             String objPath = crumb.getPath();
-            // Transform paths like /handle/1234/5678 to ".handle.1234.5678"
-            objPath = objPath.replace("/", ".");
-            // Check for a theme configuration specific to this path
-            theme = env.getProperty(THEME_SETTING + objPath);
-            // First match wins! (This lets Community/Collection themes be inherited by Collections/Items, etc)
-            if(theme!=null && !theme.isEmpty())
-                break;
+
+            // We'll ignore the root object path (/) and any empty ones (which shouldn't exist anyways)
+            if (objPath!=null && !objPath.isEmpty() && !objPath.equals("/"))
+            {
+                // Transform paths like /handle/1234/5678 to ".handle.1234.5678"
+                objPath = objPath.replace("/", ".");
+                // Check for a theme configuration specific to this path
+                String theme_config = configurationService.getProperty(THEME_SETTING + objPath);
+                // If a configuration specific to this path is found, it's our theme
+                // NOTE: this loop also ensures that themes are inherited from the parent object (Community/Collection)
+                // unless explicitly overridden by the child object.
+                if(theme_config!=null && !theme_config.isEmpty())
+                    theme = theme_config;
+            }
         }
 
         // If theme is still null, check the configured default theme.
         // Otherwise, set to a theme actually named "default"
-        if(theme==null)
+        if(theme==null || theme.isEmpty())
             theme = default_theme != null ? default_theme : "default";
 
         // Add theme name to our model
@@ -152,23 +167,26 @@ public class DSpaceController
             objID = objectIDParam;
         else
             objID = getObjectIDFromPath(path);
-            
-        try
+
+        if(objID!=null && !objID.isEmpty())
         {
-            // Get DSpace context
-            Context context = ContextUtil.obtainContext(request);
+            try
+            {
+                // Get DSpace context
+                Context context = ContextUtil.obtainContext(request);
 
-            // Now, get the object with this handle
-            DSpaceObject dso = handleService.resolveToObject(context, objID);
+                // Now, get the object with this handle
+                DSpaceObject dso = handleService.resolveToObject(context, objID);
 
-            // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
-            addObjectBreadCrumbs(breadcrumbs, dso);
+                // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
+                addObjectBreadCrumbs(breadcrumbs, dso);
+            }
+            catch(SQLException e)
+            {
+                // do nothing
+            }
         }
-        catch(SQLException e)
-        {
-            // do nothing
-        }
-
+        
         // If our path referenced an object, remove that part of the path,
         // in order to see if we have any extra information
         if(path.startsWith(OBJECT_PATH_PREFIX) && objID!=null && !objID.isEmpty())
@@ -205,7 +223,7 @@ public class DSpaceController
         }
 
         // Finally, prepend Home to all paths
-        breadcrumbs.add(0, new BreadCrumb(applicationName + " Home", "/"));
+        breadcrumbs.add(0, new BreadCrumb(getApplicationName() + " Home", "/"));
 
         return breadcrumbs;
     }
@@ -227,6 +245,8 @@ public class DSpaceController
         // Remove our path prefix (e.g. /handle/)
         if(path.startsWith(OBJECT_PATH_PREFIX))
             path = path.substring(OBJECT_PATH_PREFIX.length());
+        else // if no object path prefix, this is not an object path
+            return objID;
 
         // Extract the ObjID (e.g. Handle)
         // Format: [obj-prefix]/[obj-suffix]
@@ -289,7 +309,7 @@ public class DSpaceController
     {
         try
         {
-            if(dso!=null)
+            if(dso!=null && (dso instanceof Community || dso instanceof Collection || dso instanceof Item))
             {
                 // Add current object to our breadcrumbs
                 BreadCrumb dsoCrumb = new BreadCrumb(dso.getName(), OBJECT_PATH_PREFIX + dso.getHandle());

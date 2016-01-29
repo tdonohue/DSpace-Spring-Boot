@@ -16,16 +16,10 @@ import org.dspace.ui.filter.DSpaceRequestContextFilter;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Define the Spring Boot Application settings itself. This class takes the place 
@@ -37,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * a deployable WAR file with Spring Boot. See:
  * http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-create-a-deployable-war-file
  *
- * @author Tim
+ * @author Tim Donohue
  */
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer

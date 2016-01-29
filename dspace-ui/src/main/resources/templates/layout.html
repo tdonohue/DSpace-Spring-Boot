@@ -3,7 +3,13 @@
   This layout file defines HTML fragments which correspond to the layout of the
   site. These HTML fragments can then be referenced from other template files.
 
-  Based on the Bootstrap starter template at http://getbootstrap.com/examples/starter-template/
+  While for this prototype, I created all the fragments in a single HTML file (for simplicity),
+  it is also possible to create separate files for each fragment. For more info
+  see:
+    * http://www.thymeleaf.org/doc/articles/layouts.html
+    * http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#template-layout
+
+  HTML is based on the Bootstrap starter template at http://getbootstrap.com/examples/starter-template/
 */-->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     
@@ -16,13 +22,13 @@
     <meta name="Generator" th:content="${appName}"/>
     <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
 
-    <title th:text="${title}">(title)</title>
+    <title th:text="${title}">My Layout</title>
 
-    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap.min.css}" rel="stylesheet"/>
-    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/webjars/bootstrap/3.3.5/css/bootstrap-theme.min.css}" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet"/>
     <!--/* NOTE: theme is determined dynamically in DSpaceController. If it doesn't exist, a default.css is used */-->
     <link th:if="${theme}" th:href="@{'/css/' + ${theme} + '.css'}" rel="stylesheet"/>
-    <link th:unless="${theme}" th:href="@{'/css/default.css'}" rel="stylesheet"/>
+    <link th:unless="${theme}" th:href="@{'/css/default.css'}" href="../static/css/default.css" rel="stylesheet"/>
   </head>
 
   <body>

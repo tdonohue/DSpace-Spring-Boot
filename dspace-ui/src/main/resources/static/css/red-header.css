@@ -1,0 +1,15 @@
+body {
+  padding-top: 70px;
+}
+.starter-template {
+  padding: 40px 15px;
+}
+
+dt {
+  padding-top: 10px;
+}
+
+.navbar-inverse {
+  background-image: none;
+  background-color: #aa0000;
+}

@@ -73,7 +73,7 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
 ## Customization Capabilities
 
 - [x] CSS-level customizations
-  * Basic CSS-driven themes are already implemented in this Prototype. By default, the `layout.html` loads up a `default.css` file. However, you can customize that site-wide or per PATH/URL via an example config in [`application.properties`](https://github.com/tdonohue/DSpace-Spring-Boot/blob/spring-boot-ui/dspace-ui/src/main/resources/application.properties)
+  * Basic themes are already implemented in this Prototype. By default a "default" theme is used which has its own `layout.html` and `styles.css`. However, two other themes are available "blue-header" and "red-header". You can change the theme  site-wide or per PATH/URL by adding one of the following to your `local.cfg` 
      * `dspace.theme=default` (Specify the site-wide CSS to use)
      * `dspace.theme.handle.10673.2=blue-header` (Specifies a DIFFERENT "blue-header.css" for the /handle/10673/2 path, and any objects that include that path in their breadcrumbs)
      * These settings are fully working, and you can play with them to add different themes to different objects. Note that a theme specified for object "10673/2" will be inherited automatically by all child objects.
@@ -97,8 +97,11 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
    * All modules should be Spring-Boot-enabled..this means the following:
      * If they create their own page(s), they need to define their own Spring Boot Controllers (`@Controller`) & Views (Thymeleaf HTML pages). Spring Boot will automatically recognize the Controllers and include them.
      * Backend classes/beans should be Spring enabled (again so they are auto-discovered)
-   * If a module/addon needed to modify or insert content into an existing page, it likely would need to define one (or more) Thymeleaf HTML fragments (see `layout.html`) which could be included into whatever pages need them. This might mean a small amount of manual editing of an existing page (to insert that include statement), or simply overriding the default `@Controller` class to load a *new* copy of the page.
-     * For example, if new fields were needed to be displayed in the Item View (`item.html`), then it might either involve adding a new `<div th:include ..>` into that file manually...OR, the Module could override the default `ItemController` to load a custom version of `item.html` which has those tweaks already in it. 
+   * If a module/addon needed to modify or insert content into an existing page, it likely would need to define one (or more) Thymeleaf HTML fragments (examples `layout.html`) which could be included into whatever pages need them. This might mean a small amount of manual editing of an existing page (to insert that include statement).
+     * For example, if new fields were needed to be displayed in the Item View (`item.html`), then it might involve adding a new `<div th:include ..>` into that file manually
+   * Or, it might be possible to drive specific content via database tables
+     * For example, if most modules just add new menus/links, then the list of available menus/links could be driven via a database table. New modules could just add additional options to that table, and they'd be displayed dynamically in the site menu via the `layout.html`
+     * It's also possible to store Thymeleaf templates/fragments in database tables: http://blog.kaczmarzyk.net/2015/01/04/loading-view-templates-from-database-with-thymeleaf/
 
 ## Additional Prototype Documentation
 
@@ -109,9 +112,8 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
    * i18n is controlled via a [`messages.properties`](https://github.com/tdonohue/DSpace-Spring-Boot/blob/spring-boot-ui/dspace-ui/src/main/resources/i18n/messages.properties) file
    * Currently, it's only used/enabled on the Item View page ([`item.html`](https://github.com/tdonohue/DSpace-Spring-Boot/blob/spring-boot-ui/dspace-ui/src/main/resources/templates/item.html)). For example, this attribute: `th:text="#{item.label.bitstreams}"` says to change the text of the given HTML field to be the value of `item.label.bitstreams` from `messages.properties`
  - [x] Additional Theming Capabilities
-   * Basic (CSS/layout) theming is already provided in the prototype. But, I suspect we should be able to enhance it such that most "themes" would really just consist of custom CSS + a custom `layout.html`.
-   * It might even be possible for Themes to simply be a directory that has a single `layout.html` along with any necessary CSS/images.
-   * The Theme directory could then be "dropped into" a specific location (/src/main/resources/themes/), where it could be kept separate from the core HTML files. Then it could be enabled via a configuration (similar to in this prototype).
+   * Basic (CSS/layout) theming is already provided in the prototype, along with a few sample themes
+   * It might even be possible to find a way to override default templates (e.g. `item.html`) by [creating additional Thymeleaf template resolvers](http://stackoverflow.com/a/25588429/3750035) (to pull templates from multiple areas)
  - [x] Support for common DSpace Authentication mechanisms
    * If we went with Spring Boot, I'd recommend we move Authentication & Authorization entirely to Spring Security
    * It already provides modules supporting all our major Authentication options (database-based, LDAP, Shibboleth, etc), plus other new ones (OAuth).

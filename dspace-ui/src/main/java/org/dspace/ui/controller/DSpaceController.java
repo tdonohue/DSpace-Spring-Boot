@@ -279,12 +279,12 @@ public class DSpaceController
      */
     public String getObjectExtraInfoFromPath(String path)
     {
+        // Then extract any Object ID from path
+        String objectID = getObjectIDFromPath(path);
+
         // Remove our path prefix (e.g. /handle/)
         if(path.startsWith(OBJECT_PATH_PREFIX))
             path = path.substring(OBJECT_PATH_PREFIX.length());
-
-        // Then extract any Object ID from path
-        String objectID = getObjectIDFromPath(path);
 
         //Remove the Object ID as well
         if(objectID!=null && path.startsWith(objectID))

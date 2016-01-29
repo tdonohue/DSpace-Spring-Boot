@@ -90,7 +90,7 @@ public class BitstreamController extends DSpaceController
         else
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException("Community with handle " + handle);
+            throw new PageNotFoundException("Bitstream with handle " + handle);
         }
     }
 

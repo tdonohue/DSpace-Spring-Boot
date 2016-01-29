@@ -44,7 +44,7 @@
                         <!--/* File Listing */-->
                         <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(bitstreams)}"></dt>
                         <dd th:each="bitstream : ${bitstreams}">
-                           <a href="#" th:href="@{'/bitstream/' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">File</a>
+                           <a href="#" th:href="@{'/bitstream' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">File</a>
                         </dd>
 
                         <!--/* Issued Date (uses I18N) */-->

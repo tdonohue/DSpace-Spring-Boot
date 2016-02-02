@@ -1,6 +1,8 @@
 # DSpace Spring Boot UI Prototype
 A submission for the [2015 DSpace UI Prototype Challenge](https://wiki.duraspace.org/display/DSPACE/DSpace+UI+Prototype+Challenge)
 
+***WARNING: Force-updated to latest master (as of Feb 1, 2016). Unfortunately this required a force push in order to rebase on top of the latest [DSpace master code](https://github.com/DSpace/DSpace/).***
+
 ## Overview / Technologies
 
 This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) with one new Maven Project:
@@ -23,19 +25,38 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
 
 ## How to run it
 
-1. Find a (pre-6) DSpace Installation Directory (Unfortunately, this won't work with DSpace 5 as it requires the Service API refactor).
+1. Find a (pre-6) DSpace Installation Directory (Unfortunately, this won't work with DSpace 5 as it requires the Service API refactor and the [Enhanced Configuration Scheme](https://wiki.duraspace.org/display/DSPACE/Enhanced+Configuration+Scheme)).
   * If you don't have one, you can run `mvn clean package; cd dspace/target/dspace-installer; ant fresh_install` to create one.
+    * Please note that you may also need to create a `local.cfg` file (if you haven't already) to support the DSpace 6 [Enhanced Configuration Scheme](https://wiki.duraspace.org/display/DSPACE/Enhanced+Configuration+Scheme).
   * You'll also need some content, as this prototype doesn't yet have editing/creating capabilities built in. So, either use another UI or an AIP restore.
 2. Move into the DSpace UI folder
   * `cd dspace-ui`
 2. Copy the default `application.properties` for this Spring Boot Application to the root directory. 
   * For example: `cp src/main/resources/application.properties .`
+  * If you wish to run this application in your IDE, you also can directly edit the `src/main/resources/application.properties` as needed.
 3. Modify that `application.properties`, changing the value of `dspace.dir` to point to your DSpace installation directory 
 4. Build the dspace-ui module: `mvn clean package`
-5. Run it: `java -jar target/dspace-ui-6.0-SNAPSHOT.jar` (This starts the embedded Tomcat on port 8080 by default)
+5. Run it: `java -jar target/dspace-ui-6.0-SNAPSHOT.jar` (This starts the embedded Tomcat on port 8080 by default, or whatever port is specified in your `application.properties` file)
   * You can also run it directly from any IDE. Just select the `org.dspace.ui.Application` task to run.
   * When running from the IDE, it will use `src/main/resources/application.properties` by default.
 6. Access it: http://localhost:8080/
+7. If you want to customize the theming, you can modify your `[dspace]/config/local.cfg` with the following settings (by default your `local.cfg` will be auto-reloaded every minute):
+```
+# Custom Theme settings.
+# This defines our default site-wide theme
+# For example setting to "default" just uses the theme named default
+dspace.theme=default
+
+# Different themes can be specified per path
+# If this specifies a Handle of a Community or Collection, the theme will
+# automatically be inherited to child objects
+#
+# This sample just loads "blue-header" theme (which makes the header blue like Mirage2)
+# for the 10673/2 handle AND any child objects
+# Other sample values include "red-header", "blue-header", "default"
+dspace.theme.handle.10673.2=blue-header
+dspace.theme.handle.10673.3=red-header
+```
 
 ## Scope of this Prototype
 

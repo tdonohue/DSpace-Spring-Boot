@@ -19,7 +19,7 @@ This GitHub project is an exact clone of the DSpace 'master' branch (pre-6.0) wi
 * [Spring Security](http://projects.spring.io/spring-security/) for basic authentication/authorization
   * Spring Security was chosen as it's a best practice for Spring Boot. It also has modules to support most every type of authentication imaginable (DB based, LDAP, Shibooleth, OAuth, etc).
   * Plus it provides very useful Authorization tools/roles that are easy to use within Spring Boot
-* DSpace Java API, lastest master branch (pre-6.0) as of Nov 2015 AND the Apache Commons Configuration feature ([PR#1104](https://github.com/DSpace/DSpace/pull/1104)) added 
+* DSpace Java API, lastest master branch (pre-6.0) as of Feb 2016
 
 (NOTE: despite this being a DSpace master clone, all modules EXCEPT `dspace-ui`, `dspace-api` and `dspace-services` are disabled in the build)
 
@@ -139,3 +139,12 @@ dspace.theme.handle.10673.3=red-header
    * If we went with Spring Boot, I'd recommend we move Authentication & Authorization entirely to Spring Security
    * It already provides modules supporting all our major Authentication options (database-based, LDAP, Shibboleth, etc), plus other new ones (OAuth).
    * It also provides a highly configurable Authorization framework, which integrates much better with Spring Boot and Spring in general.
+
+
+## UPDATE - Built in REST API (for Item View Only)
+
+As of Feb 2016, this Prototype was also enhanced to show off some basic "REST-like" capabilities of Item view pages.
+
+Simply visit an Item View page and click the "JSON View" or "XML View" buttons. They give a view of the same underlying data, in JSON or XML format, respectively. For the code behind this, see the ItemController class.
+
+This feature shows off the ability to perform "content negotiation" using Spring Boot/MVC. The goal is to demonstrate how we could refactor the existing REST API so that it actually becomes a part of the new UI, and both would share the same underlying business logic.

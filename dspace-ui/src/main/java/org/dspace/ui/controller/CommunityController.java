@@ -8,10 +8,10 @@
 package org.dspace.ui.controller;
 
 import java.sql.SQLException;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Community;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CommunityService;
 import org.dspace.core.Context;
@@ -19,8 +19,8 @@ import org.dspace.ui.exception.PageNotFoundException;
 import org.dspace.ui.utils.ContextUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for all Community activities.
@@ -30,31 +30,31 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Tim Donohue
  */
 @Controller
+@RequestMapping("/communities")
 public class CommunityController extends DSpaceController
 {
-
-    // This Controller receives forwards (from HandleController) via the /community path
-    @RequestMapping("/community")
-    public String community(Model model, HttpServletRequest request, @RequestParam String handle)
+    protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
+    
+    // This Controller receives forwards (from HandleController) via the /communities path
+    @RequestMapping("/{id}")
+    public String community(@PathVariable UUID id, Model model, HttpServletRequest request)
             throws SQLException
     {
         // Get DSpace context
         Context context = ContextUtil.obtainContext(request);
 
-        // Now, get the Collection with this handle
-        DSpaceObject dso = handleService.resolveToObject(context, handle);
+        Community community = communityService.find(context, id);
 
-        if(dso instanceof Community)
+        if(community!=null)
         {
-            return displayCommunityHomepage(context, (Community) dso, model, request);
+            return displayCommunityHomepage(context, community, model, request);
         }
         else
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException("Community with handle " + handle);
+            throw new PageNotFoundException("Community with ID=" + id);
         }
     }
-
 
     /**
      * Display the homepage for a single Community

@@ -42,9 +42,9 @@
                     <!-- Description List of metadata fields -->
                     <dl>
                         <!--/* File Listing */-->
-                        <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(bitstreams)}"></dt>
-                        <dd th:each="bitstream : ${bitstreams}">
-                           <a href="#" th:href="@{'/bitstream' + ${itemModel.link} + '/' + ${bitstream.name}}" th:text="${bitstream.name}">File</a>
+                        <dt th:text="#{item.label.bitstreams}" th:unless="${#lists.isEmpty(itemModel.bitstreamNames)}"></dt>
+                        <dd th:each="bitstreamName : ${itemModel.bitstreamNames}">
+                           <a href="#" th:href="@{'/bitstream' + ${itemModel.link} + '/' + ${bitstreamName}}" th:text="${bitstreamName}">File</a>
                         </dd>
 
                         <!--/* Issued Date (uses I18N) */-->
@@ -82,7 +82,10 @@
                     </dl>
                 </div>
             </div>
-
+            <div class="row">
+                <a class="btn btn-default" role="button" th:href="@{'/items/' + ${itemModel.UUID} + '.json'}">JSON VIEW</a>
+                <a class="btn btn-default" role="button" th:href="@{'/items/' + ${itemModel.UUID} + '.xml'}">XML VIEW</a>
+            </div>
         </div>
     </div>
 

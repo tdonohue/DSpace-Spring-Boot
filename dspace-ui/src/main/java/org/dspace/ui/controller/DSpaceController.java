@@ -10,19 +10,23 @@ package org.dspace.ui.controller;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
+import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.ui.utils.BreadCrumb;
 import org.dspace.ui.utils.ContextUtil;
-import org.dspace.utils.DSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
@@ -44,14 +49,19 @@ public class DSpaceController
 {
     private static final Logger log = LoggerFactory.getLogger(DSpaceController.class);
 
+    // Constants for response types
+    protected final String HTML_RESPONSE = "text/html";
+    protected final String JSON_RESPONSE = "application/json";
+    protected final String XML_RESPONSE = "application/xml";
+    
     // Path which corresponds to an object homepage
     protected final String OBJECT_PATH_PREFIX = "/handle/";
 
-    // Parameter which, when specified, refers to a specific object
-    protected final String OBJECT_ID_PARAMETER = "handle";
-
     protected final String THEME_SETTING = "dspace.theme";
 
+    protected final static String BREADCRUMBS_ATTR = "breadCrumbList";
+    protected final static String THEME_ATTR = "theme";
+    
     // Autowire our Environment, so that we can directly read settings from application.properties
     @Autowired
     Environment env;
@@ -63,42 +73,56 @@ public class DSpaceController
 
     // Shared reference to HandleService
     protected HandleService handleService = HandleServiceFactory.getInstance().getHandleService();
-
+    
     // Shared reference to ConfigurationService
-    protected ConfigurationService configurationService = new DSpace().getConfigurationService();
+    protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    /**
-     * Make ${applicationName} available to all pages in theme
-     *
-     * @return application name
-     */
-    @ModelAttribute("applicationName")
-    public String getApplicationName()
+    @ModelAttribute(BREADCRUMBS_ATTR)
+    public List<BreadCrumb> addBreadCrumbs(@PathVariable Optional<UUID> id, @ModelAttribute(GlobalControllerAdvice.APPLICATION_NAME_ATTR) String applicationName, Model model, HttpServletRequest request)
     {
-        // Pull application name from DSpace configuration
-        return configurationService.getProperty("dspace.name");
-        //return applicationName;
+        DSpaceObject dso = null;
+        if(id.isPresent() && id.get()!=null)
+        {
+            try
+            {
+                // Get DSpace context
+                Context context = ContextUtil.obtainContext(request);
+
+                // If we have a UUID, determine which kind of Controller we are dealing with,
+                // and get acess to the corresponding DSpace Object
+                if(this.getClass().equals(ItemController.class))
+                {
+                    dso = ContentServiceFactory.getInstance().getItemService().find(context, id.get());
+                }
+                else if(this.getClass().equals(CollectionController.class))
+                {
+                    dso = ContentServiceFactory.getInstance().getCollectionService().find(context, id.get());
+                }
+                else if(this.getClass().equals(CommunityController.class))
+                {
+                    dso = ContentServiceFactory.getInstance().getCommunityService().find(context, id.get());
+                }
+            }
+            catch(SQLException e)
+            {
+                // ignore for now
+            }
+        }
+
+        // get our list of breadcrumbs and return them
+        return getBreadCrumbs(request, dso, applicationName);
     }
 
-    /**
-     * Add several key attributes to our model at once. These attributes
-     * help to drive our theme / layout (e.g. breadcrumbs, theme, etc)
-     * @param model
-     * @param request 
-     */
-    @ModelAttribute
-    public void setAttributes(Model model, HttpServletRequest request)
+    @ModelAttribute(THEME_ATTR)
+    public String addTheme(@ModelAttribute(BREADCRUMBS_ATTR) List<BreadCrumb> breadcrumbs)
     {
-        // Get our breadcrumbs, based on our current request location
-        List<BreadCrumb> breadcrumbs = getBreadCrumbs(request);
-        model.addAttribute(breadcrumbs);
-
+        //return "default";
         // Look for default theme configuration in DSpace configuration first
         // Look in DSpace config first
         String default_theme = configurationService.getProperty(THEME_SETTING);
 
         // If not there, default to one in application.properties (Spring Boot config)
-        if(default_theme==null || default_theme.isEmpty())
+        if(StringUtils.isBlank(default_theme))
             default_theme = env.getProperty(THEME_SETTING);
 
         String theme = null;
@@ -112,7 +136,7 @@ public class DSpaceController
             String objPath = crumb.getPath();
 
             // We'll ignore the root object path (/) and any empty ones (which shouldn't exist anyways)
-            if (objPath!=null && !objPath.isEmpty() && !objPath.equals("/"))
+            if (StringUtils.isNotBlank(objPath) && !objPath.equals("/"))
             {
                 // Transform paths like /handle/1234/5678 to ".handle.1234.5678"
                 objPath = objPath.replace("/", ".");
@@ -128,25 +152,21 @@ public class DSpaceController
 
         // If theme is still null, check the configured default theme.
         // Otherwise, set to a theme actually named "default"
-        if(theme==null || theme.isEmpty())
+        if(StringUtils.isBlank(theme))
             theme = default_theme != null ? default_theme : "default";
 
-        // Add theme name to our model
-        model.addAttribute("theme", theme);
+        return theme;
     }
-    
+
     /**
      * Add list of breadcrumbs, based on our path within the application.
      *
      * @param request HttpServletRequest (automatically provided)
+     * @param dso DSpaceObject we are viewing (or null)
      * @return List of BreadCrumbs for display in theme
      */
-    public List<BreadCrumb> getBreadCrumbs(HttpServletRequest request)
+    public List<BreadCrumb> getBreadCrumbs(HttpServletRequest request, DSpaceObject dso, String applicationName)
     {
-        // First, check if a parameter was passed on the request referring
-        // to a specific object by its ID
-        String objectIDParam = request.getParameter(OBJECT_ID_PARAMETER);
-
         // Get servlet path (without application's context path)
         // If you are accessing a specific object in the system,
         // this will return something like /handle/1/1
@@ -160,41 +180,24 @@ public class DSpaceController
         // List of breadcrumbs
         List<BreadCrumb> breadcrumbs = new LinkedList<>();
 
-        // If an objectID parameter was found, use it.
-        // Otherwise, determine it from our request path
-        String objID = null;
-        if(objectIDParam!=null && !objectIDParam.isEmpty())
-            objID = objectIDParam;
-        else
-            objID = getObjectIDFromPath(path);
-
-        if(objID!=null && !objID.isEmpty())
+        if(dso!=null)
         {
-            try
-            {
-                // Get DSpace context
-                Context context = ContextUtil.obtainContext(request);
+            // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
+            addObjectBreadCrumbs(breadcrumbs, dso);
+        
+            String uuid = dso.getID()!=null ? dso.getID().toString() : "";
 
-                // Now, get the object with this handle
-                DSpaceObject dso = handleService.resolveToObject(context, objID);
-
-                // Obtain the breadcrumbs for this object (which includes referencing all parent objects)
-                addObjectBreadCrumbs(breadcrumbs, dso);
-            }
-            catch(SQLException e)
-            {
-                // do nothing
-            }
+            // If our path referenced an object (by ID or handle), remove everything up to, and including
+            // the identifier from the path, to see if we have anything else on our path.
+            if(StringUtils.isNotBlank(uuid) && path.contains(uuid))
+                path = path.substring(path.indexOf(uuid) + uuid.length());
+            if(StringUtils.isNotBlank(dso.getHandle()) && path.contains(dso.getHandle()))
+                path = path.substring(path.indexOf(dso.getHandle()) + dso.getHandle().length());
         }
         
-        // If our path referenced an object, remove that part of the path,
-        // in order to see if we have any extra information
-        if(path.startsWith(OBJECT_PATH_PREFIX) && objID!=null && !objID.isEmpty())
-            path = path.replace(OBJECT_PATH_PREFIX + objID, "");
-
         // At this point we may still have a non-empty path, if it didn't refer
         // to a specific object, or if there was extra info provided after the
-        // objectID on the path
+        // handle on the path
         
         // First, remove any starting slash (if any)
         if(path.startsWith("/"))
@@ -223,7 +226,7 @@ public class DSpaceController
         }
 
         // Finally, prepend Home to all paths
-        breadcrumbs.add(0, new BreadCrumb(getApplicationName() + " Home", "/"));
+        breadcrumbs.add(0, new BreadCrumb(applicationName + " Home", "/"));
 
         return breadcrumbs;
     }

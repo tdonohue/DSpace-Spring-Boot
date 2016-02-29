@@ -15,12 +15,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * DSpace Error Controller. This extends our DSpaceController so that it
- * can include our theme, breadcrumbs, etc.
+ * DSpace Error Controller.
+ * <P>
+ * Because this uses @ControllerAdvice, its @ExceptionHandler is automatically
+ * inherited in every other Controller. Therefore, it acts as the default 
+ * Error Handler for all our Controllers.
+ * <P>
+ * See: https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/ControllerAdvice.html
+ * 
  * @author Tim Donohue
  */
-@ControllerAdvice
-public class DSpaceErrorController extends DSpaceController
+@ControllerAdvice(basePackages= {"org.dspace.ui.controller"})
+public class DSpaceErrorController
 {
     public static final String DEFAULT_ERROR_VIEW = "error";
 
@@ -43,7 +49,7 @@ public class DSpaceErrorController extends DSpaceController
         model.addAttribute("exception_type", e.getClass().getName());
         model.addAttribute("exception_path", new UrlPathHelper().getPathWithinApplication(request));
         model.addAttribute("exception_stack", ExceptionUtils.getFullStackTrace(e));
-
+        
         // Just display our default (themed) error page for all exceptions
         return DEFAULT_ERROR_VIEW;
     }

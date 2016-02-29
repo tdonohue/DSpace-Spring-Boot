@@ -14,9 +14,7 @@ import org.dspace.content.Community;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CommunityService;
 import org.dspace.core.Context;
-import org.dspace.services.ConfigurationService;
 import org.dspace.ui.utils.ContextUtil;
-import org.dspace.utils.DSpace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -32,19 +30,13 @@ public class HomeController extends DSpaceController
 {
     private static final Logger log = LoggerFactory.getLogger(HomeController.class);
 
-    // Path that this Controller responds to
-    private static final String PATH = "/";
-
     protected CommunityService communityService = ContentServiceFactory.getInstance().getCommunityService();
 
     // This Controller responds to / path
-    @RequestMapping(PATH)
+    @RequestMapping("/")
     public String home(Model model, HttpServletRequest request)
             throws SQLException
     {
-        // Get various properties from dspace.cfg file
-        ConfigurationService config = new DSpace().getConfigurationService();
-
         // Get list of DSpace Communities
         Context context = ContextUtil.obtainContext(request);
         // Load DSpace Communities & save to "communities" model attribute for View

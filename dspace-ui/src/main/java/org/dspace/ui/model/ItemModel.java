@@ -23,12 +23,15 @@ import org.dspace.app.util.factory.UtilServiceFactory;
 import org.dspace.app.util.service.MetadataExposureService;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
 import org.dspace.content.DCDate;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +80,7 @@ public class ItemModel extends DSpaceObjectModel
     private String lastModified;
     
     private List<MetadataEntry> allMetadataEntries;
+    private List<String> bitstreamNames;
     
     private static final String DATE_FORMAT="yyyy-MM-dd";
     
@@ -123,6 +127,22 @@ public class ItemModel extends DSpaceObjectModel
                 metadata.put(metadataKey, new MetadataEntry(metadataKey, metadataValue.getValue(), metadataValue.getLanguage()));
             }
         }
+        
+        // Get a list of content bitstreams (Just content ones for now)
+        // TODO: These should really be separate BitstreamModel objects, and NOT just bitstream names
+        List<Bundle> bundles = itemService.getBundles(item, Constants.CONTENT_BUNDLE_NAME);
+        List<String> bitstreamNames = new ArrayList<String>();
+        // There should just be ONE content bundle. Add its bitstreams to our model
+        if(bundles.size()>0)
+        {
+            List<Bitstream> itemBitstreams = bundles.get(0).getBitstreams();
+            for(Bitstream itemBitstream : itemBitstreams) {
+                if(authorizeService.authorizeActionBoolean(context, itemBitstream, org.dspace.core.Constants.READ)) {
+                    bitstreamNames.add(itemBitstream.getName());
+                }
+             }
+        }
+        this.setBitstreamNames(bitstreamNames);
 
         // Set other object properties
         this.setArchived(Boolean.toString(item.isArchived()));
@@ -290,5 +310,11 @@ public class ItemModel extends DSpaceObjectModel
             return null;
     }
     
-    
+    public List<String> getBitstreamNames() {
+        return this.bitstreamNames;
+    }
+
+    public void setBitstreamNames(List<String> bitstreamNames) {
+        this.bitstreamNames = bitstreamNames;
+    }
 }

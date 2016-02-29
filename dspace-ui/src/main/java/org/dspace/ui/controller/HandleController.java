@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.util.UrlPathHelper;
 
 /**
  * Controller for /handle/** paths.
@@ -42,6 +42,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Tim Donohue
  */
 @Controller
+@RequestMapping("/handle")
 public class HandleController extends DSpaceController
 {
     private static final Logger log = LoggerFactory.getLogger(HandleController.class);
@@ -49,98 +50,92 @@ public class HandleController extends DSpaceController
     // Path that this Controller responds to
     public static final String PATH = "/handle";
 
-    // This method responds to /handle/*/* path
-    @RequestMapping(PATH + "/*/*")
-    public String viewObject(Model model, HttpServletRequest request)
+    /**
+     * This method responds to /handle/{prefix}/{suffix}. Its job is to redirect
+     * to the appropriate controller.
+     * @param prefix
+     * @param suffix
+     * @param model
+     * @param request
+     * @param redirectAttributes
+     * @return
+     * @throws SQLException 
+     */
+    @RequestMapping("/{prefix}/{suffix}")
+    public String redirectToObject(@PathVariable String prefix, @PathVariable String suffix, HttpServletRequest request)
             throws SQLException
     {
         // Get DSpace context
         Context context = ContextUtil.obtainContext(request);
 
-        // Get full path (without context path)
-        // This will return something like /handle/1/1
-        String path = new UrlPathHelper().getPathWithinApplication(request);
-
-        // Extract the handle prefix suffix out of our path
-        String handle = path.substring(PATH.length()+1);
-
-        // Now, get the object with this handle
-        DSpaceObject dso = handleService.resolveToObject(context, handle);
+        // Get the object with this handle
+        DSpaceObject dso = handleService.resolveToObject(context, prefix + "/" + suffix);
 
         // Send to correct view based on type of object
         if(dso == null)
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException(path);
+            throw new PageNotFoundException("Object with Handle=" + prefix + "/" + suffix);
         }
         else if(dso instanceof Community)
         {
-            // Forward request to the CommunityController, passing it the handle
-            return "forward:/community?handle=" + handle;
+            // Forward request to the CommunityController, passing it the internal id
+            return "forward:/communities/" + dso.getID();
         }
         else if(dso instanceof Collection)
         {
-            // Forward request to the CollectionController, passing it the handle
-            return "forward:/collection?handle=" + handle;
+            // Forward request to the CollectionController, passing it the internal id
+            return "forward:/collections/" + dso.getID();
         }
         else if(dso instanceof Item)
         {
-            // Forward request to the ItemController, passing it the handle
-            return "forward:/item?handle=" + handle;
+            // Forward request to the ItemController, passing it the internal id
+            return "forward:/items/" + dso.getID();
         }
         else
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException(path);
+            throw new PageNotFoundException("Object with Handle=" + prefix + "/" + suffix + " is not a valid DSpace object.");
         }
     }
     
     
     // This method responds to /handle/*/*/edit path
-    @RequestMapping(PATH + "/*/*/edit")
-    public String editObject(Model model, HttpServletRequest request)
+    @RequestMapping("/{prefix}/{suffix}/edit")
+    public String editObject(@PathVariable String prefix, @PathVariable String suffix, Model model, HttpServletRequest request)
             throws SQLException
     {
         // Get DSpace context
         Context context = ContextUtil.obtainContext(request);
 
-        // Get full path (without context path)
-        // This will return something like /handle/1/1
-        String path = new UrlPathHelper().getPathWithinApplication(request);
-
-        // Extract the handle prefix suffix out of our path
-        String handle = path.substring(PATH.length()+1);
-        if(handle.endsWith("/edit"))
-            handle = handle.substring(0, handle.indexOf("/edit"));
-
-        // Now, get the object with this handle
-        DSpaceObject dso = handleService.resolveToObject(context, handle);
+        // Get the object with this handle
+        DSpaceObject dso = handleService.resolveToObject(context, prefix + "/" + suffix);
         
         // Send to correct view based on type of object
         if(dso == null)
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException(path);
+            throw new PageNotFoundException("Object with Handle=" + prefix + "/" + suffix);
         }
         else if(dso instanceof Community)
         {
-            // Forward request to the CommunityController, passing it the handle
-            return "forward:/edit/community?handle=" + handle;
+            // Forward request to the CommunityController, passing it the id
+            return "forward:/community/" + dso.getID() + "/edit";
         }
         else if(dso instanceof Collection)
         {
-            // Forward request to the CollectionController, passing it the handle
-            return "forward:/edit/collection?handle=" + handle;
+            // Forward request to the CollectionController, passing it the id
+            return "forward:/collection/" + dso.getID() + "/edit";
         }
         else if(dso instanceof Item)
         {
-            // Forward request to the ItemController, passing it the handle
-            return "forward:/edit/item?handle=" + handle;
+            // Forward request to the ItemController, passing it the id
+            return "forward:/item/" + dso.getID() + "/edit";
         }
         else
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException(path);
+            throw new PageNotFoundException("Object with Handle=" + prefix + "/" + suffix + " is not a valid DSpace object.");
         }
     }
 

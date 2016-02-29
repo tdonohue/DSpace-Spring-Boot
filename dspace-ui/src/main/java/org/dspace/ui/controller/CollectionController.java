@@ -10,11 +10,11 @@ package org.dspace.ui.controller;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.IteratorUtils;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Collection;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.CollectionService;
@@ -25,8 +25,8 @@ import org.dspace.ui.utils.ContextUtil;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for all Collection activities.
@@ -36,28 +36,30 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Tim Donohue
  */
 @Controller
+@RequestMapping("/collections")
 public class CollectionController extends DSpaceController
 {
-
-    // This Controller receives forwards (from HandleController) via the /collection path
-    @RequestMapping("/collection")
-    public String collection(Model model, HttpServletRequest request, @RequestParam String handle)
+    protected CollectionService collectionService = ContentServiceFactory.getInstance().getCollectionService();
+    
+    // This Controller receives forwards (from HandleController) via the /collections path
+    @RequestMapping("/{id}")
+    public String collection(@PathVariable UUID id, Model model, HttpServletRequest request)
             throws SQLException
     {
         // Get DSpace context
         Context context = ContextUtil.obtainContext(request);
 
         // Now, get the Collection with this handle
-        DSpaceObject dso = handleService.resolveToObject(context, handle);
-
-        if(dso instanceof Collection)
+        Collection collection = collectionService.find(context, id);
+        
+        if(collection!=null)
         {
-            return displayCollectionHomepage(context, (Collection) dso, model, request);
+            return displayCollectionHomepage(context, collection, model, request);
         }
         else
         {
             // Throw a 404 page not found
-            throw new PageNotFoundException("Collection with handle " + handle);
+            throw new PageNotFoundException("Collection with ID=" + id);
         }
     }
 

@@ -126,6 +126,14 @@
         <dependency>
             <groupId>org.dspace</groupId>
             <artifactId>dspace-api</artifactId>
+            <exclusions>
+                <!-- This exclusion is necessary for 'woodstox-core-asl' to 
+                     work properly (see below dependencies for XML responses -->
+                <exclusion>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>wstx-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.dspace</groupId>
@@ -138,6 +146,21 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.1</version>
+        </dependency>
+        
+        <!-- Jackson XML extension is used to render XML responses for REST calls -->
+        <!-- By default, Spring Boot can only auto-render JSON responses. See also:
+             https://docs.spring.io/spring-boot/docs/current/reference/html/howto-spring-mvc.html -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+        <!-- Woodstox is also used for XML responses for REST calls. It is
+             supposedly faster and provides pretty print support to Jackson XML -->
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>4.4.1</version>
         </dependency>
     </dependencies>
 

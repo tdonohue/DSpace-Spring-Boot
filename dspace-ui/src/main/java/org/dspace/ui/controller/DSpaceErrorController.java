@@ -8,6 +8,7 @@
 package org.dspace.ui.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +42,7 @@ public class DSpaceErrorController extends DSpaceController
         model.addAttribute("exception", e);
         model.addAttribute("exception_type", e.getClass().getName());
         model.addAttribute("exception_path", new UrlPathHelper().getPathWithinApplication(request));
+        model.addAttribute("exception_stack", ExceptionUtils.getFullStackTrace(e));
 
         // Just display our default (themed) error page for all exceptions
         return DEFAULT_ERROR_VIEW;

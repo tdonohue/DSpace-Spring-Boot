@@ -20,7 +20,7 @@
                 <strong>There was an unexpected error (type=<span th:text="${error}? ${error} : ${exception_type}">(error-type)</span>, status=<span th:text="${status}">(error-status-code)</span>, path=<span th:text="${path} ? ${path} : ${exception_path}">(path)</span>).</strong>
                 <div id="created" th:text="${#dates.format(timestamp)}" th:if="${timestamp}">(date/time)</div>
                 <div th:text="${message} ? ${message} : ${exception.message}">(error message)</div>
-                <div class="hidden"><pre th:text="${trace} ? 'Stacktrace: ' + ${trace} : 'Stacktrace: ' + ${exception}">(stacktrace)</pre></div>
+                <div class="hidden"><pre th:text="${trace} ? 'Stacktrace: ' + ${trace} : 'Stacktrace: ' + ${exception_stack}">(stacktrace)</pre></div>
             </div>
             
             <div>

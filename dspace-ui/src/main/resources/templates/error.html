@@ -2,10 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <!--/* Include the 'htmlhead' fragment in the 'layout.html' of our theme */-->
-<head th:include="@{'../static/themes/' + ${theme} + '/layout'} :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
+<!--/* For an error page, we only will ever use the DEFAULT layout */-->
+<head th:include="@{'../static/themes/default/layout'} :: htmlhead" th:with="title='DSpace Spring Boot Testing'"></head>
 
 <body>
-    <div th:replace="@{'../static/themes/' + ${theme} + '/layout'} :: navbar">(navbar)</div>
+    <div th:replace="@{'../static/themes/default/layout'} :: navbar">(navbar)</div>
     
     <div class="container">
         <div class="starter-template">
@@ -16,10 +17,10 @@
                    http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/web/DefaultErrorAttributes.html */-->
             <div class="alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                <strong>There was an unexpected error (type=<span th:text="${error}">(error-type)</span>, status=<span th:text="${status}">(error-status-code)</span>, path=<span th:text="${path}">(path)</span>).</strong>
-                <div id="created" th:text="${#dates.format(timestamp)}">(date/time)</div>
-                <div th:text="${message}">(error message)</div>
-                <div class="hidden"><pre th:text="'Stacktrace: ' + ${trace}">(stacktrace)</pre></div>
+                <strong>There was an unexpected error (type=<span th:text="${error}? ${error} : ${exception_type}">(error-type)</span>, status=<span th:text="${status}">(error-status-code)</span>, path=<span th:text="${path} ? ${path} : ${exception_path}">(path)</span>).</strong>
+                <div id="created" th:text="${#dates.format(timestamp)}" th:if="${timestamp}">(date/time)</div>
+                <div th:text="${message} ? ${message} : ${exception.message}">(error message)</div>
+                <div class="hidden"><pre th:text="${trace} ? 'Stacktrace: ' + ${trace} : 'Stacktrace: ' + ${exception}">(stacktrace)</pre></div>
             </div>
             
             <div>
@@ -30,6 +31,6 @@
     </div>
     
     
-    <div th:include="@{'../static/themes/' + ${theme} + '/layout'} :: footer" id="footer">(footer)</div>
+    <div th:include="@{'../static/themes/default/layout'} :: footer" id="footer">(footer)</div>
 </body>
 </html>
